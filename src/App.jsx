@@ -1,6 +1,5 @@
-// App.jsx - Main Application shell, router setup, and state providers
-import React, { useState } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { HashRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Navigation from './components/Navigation';
@@ -16,11 +15,23 @@ import ProfilePage from './pages/ProfilePage';
 import SettingsPage from './pages/SettingsPage';
 import AdminPage from './pages/AdminPage';
 import NotificationPage from './pages/NotificationPage';
+import AkakTishMain from './pages/AkakTishMain';
 
 function ProtectedLayout({ children }) {
   const { currentUser } = useAuth();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
+  const [createPostType, setCreatePostType] = useState('photo');
   const location = useLocation();
+
+  useEffect(() => {
+    const handleOpenModal = (e) => {
+      setCreatePostType(e.detail?.type || 'photo');
+      setIsCreateOpen(true);
+    };
+
+    window.addEventListener('open_create_modal', handleOpenModal);
+    return () => window.removeEventListener('open_create_modal', handleOpenModal);
+  }, []);
 
   if (!currentUser) {
     return <Navigate to="/login" replace />;
@@ -29,11 +40,16 @@ function ProtectedLayout({ children }) {
   // Adjust padding depending on if we are in Direct chat page (which fits fully in viewport)
   const isDirectChat = location.pathname.startsWith('/direct');
 
+  const handleOpenGeneralCreate = () => {
+    setCreatePostType('photo');
+    setIsCreateOpen(true);
+  };
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-theme-lightBg dark:bg-theme-darkBg text-theme-lightText dark:text-theme-darkText transition-colors duration-200">
       
       {/* Navigation Bars */}
-      <Navigation onCreateClick={() => setIsCreateOpen(true)} />
+      <Navigation onCreateClick={handleOpenGeneralCreate} />
 
       {/* Main Content Area */}
       <main className={`flex-1 pt-14 md:pt-0 pb-16 md:pb-0 md:pl-64 ${
@@ -48,6 +64,7 @@ function ProtectedLayout({ children }) {
       {isCreateOpen && (
         <CreatePostModal 
           isOpen={isCreateOpen} 
+          initialPostType={createPostType}
           onClose={() => setIsCreateOpen(false)} 
         />
       )}
@@ -130,6 +147,11 @@ function MainRoutes() {
             <NotificationPage />
           </ProtectedLayout>
         } 
+      />
+
+      <Route 
+        path="/akaktish/*" 
+        element={<AkakTishMain />} 
       />
 
       {/* Fallback */}

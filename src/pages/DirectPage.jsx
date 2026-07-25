@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { dbService } from '../services/dbService';
-import { Send, Plus, ChevronLeft, Search, MessageSquare, ImageIcon, Paperclip } from 'lucide-react';
+import { Send, Plus, ChevronLeft, Search, MessageSquare, ImageIcon, Paperclip, Film, Clapperboard, X } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -13,6 +13,8 @@ export default function DirectPage() {
   const [messages, setMessages] = useState([]);
   const [users, setUsers] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [reels, setReels] = useState([]);
+  const [showVideoPicker, setShowVideoPicker] = useState(false);
   
   const [text, setText] = useState('');
   const [showNewChat, setShowNewChat] = useState(false);
@@ -21,15 +23,17 @@ export default function DirectPage() {
   
   const chatBottomRef = useRef(null);
 
-  // Subscribe to conversations, users, and posts
+  // Subscribe to conversations, users, posts, and reels
   useEffect(() => {
     const unsubConvs = dbService.subscribeToConversations(currentUser.uid, setConversations);
     const unsubUsers = dbService.subscribeToUsers(setUsers);
     const unsubPosts = dbService.subscribeToPosts(setPosts);
+    const unsubReels = dbService.subscribeToReels(setReels);
     return () => {
       unsubConvs();
       unsubUsers();
       unsubPosts();
+      unsubReels();
     };
   }, [currentUser.uid]);
 
@@ -206,9 +210,12 @@ export default function DirectPage() {
               {messages.map((msg) => {
                 const isSelf = msg.senderId === currentUser.uid;
                 
-                // If message contains a shared post
+                // If message contains a shared post or reel
                 const sharedPost = msg.sharedPostId ? posts.find(p => p.id === msg.sharedPostId) : null;
                 const sharedPostAuthor = sharedPost ? users.find(u => u.uid === sharedPost.userId) : null;
+
+                const sharedReel = msg.sharedReelId ? reels.find(r => r.id === msg.sharedReelId) : null;
+                const sharedReelAuthor = sharedReel ? users.find(u => u.uid === sharedReel.userId) : null;
 
                 return (
                   <div 
@@ -218,7 +225,7 @@ export default function DirectPage() {
                     }`}
                   >
                     {/* Normal message text */}
-                    {!sharedPost && (
+                    {!sharedPost && !sharedReel && (
                       <div className={`p-3.5 rounded-2xl text-xs font-medium ${
                         isSelf 
                           ? 'bg-brand text-white rounded-br-none shadow-md shadow-brand/10' 
@@ -255,11 +262,43 @@ export default function DirectPage() {
                           <Link 
                             to="/" 
                             className="text-[9px] font-bold text-brand hover:underline mt-1.5 block"
-                            onClick={() => {
-                              // Custom anchor or action to view post (links to Feed for now)
-                            }}
                           >
                             Посмотреть публикацию
+                          </Link>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Shared Reel card layout */}
+                    {sharedReel && (
+                      <div className={`border border-theme-lightBorder dark:border-theme-darkBorder rounded-2xl overflow-hidden bg-theme-lightCard dark:bg-theme-darkCard w-56 flex flex-col shadow-md ${
+                        isSelf ? 'rounded-br-none' : 'rounded-bl-none'
+                      }`}>
+                        <div className="p-2 border-b border-slate-50 dark:border-slate-800/40 flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <img 
+                              src={sharedReelAuthor?.photoURL || 'https://api.dicebear.com/7.x/avataaars/svg'} 
+                              alt={sharedReelAuthor?.displayName} 
+                              className="w-6 h-6 rounded-full object-cover"
+                            />
+                            <span className="text-[10px] font-bold truncate">@{sharedReelAuthor?.username}</span>
+                          </div>
+                          <span className="text-[9px] font-extrabold text-brand bg-brand/10 px-2 py-0.5 rounded">Reels 🎬</span>
+                        </div>
+                        <div className="w-full aspect-[9/14] bg-slate-950 overflow-hidden relative group">
+                          <img src={sharedReel.coverURL || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800'} alt="Reel Cover" className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+                            <Link to="/reels" className="p-3 rounded-full bg-brand text-white shadow-lg hover:scale-110 transition-transform flex items-center justify-center font-bold text-xs">
+                              ▶ Смотреть
+                            </Link>
+                          </div>
+                        </div>
+                        <div className="p-2.5">
+                          <p className="text-[10px] text-theme-lightMuted dark:text-theme-darkMuted line-clamp-2 leading-normal font-medium">
+                            {sharedReel.caption}
+                          </p>
+                          <Link to="/reels" className="text-[9px] font-bold text-brand hover:underline mt-1.5 block">
+                            Смотреть Reels в плеере ▶
                           </Link>
                         </div>
                       </div>
@@ -274,8 +313,62 @@ export default function DirectPage() {
               <div ref={chatBottomRef} />
             </div>
 
+            {/* Video / Reels Picker Drawer */}
+            <AnimatePresence>
+              {showVideoPicker && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 10 }}
+                  className="p-4 border-t border-theme-lightBorder dark:border-theme-darkBorder bg-slate-50 dark:bg-slate-900/60 transition-colors"
+                >
+                  <div className="flex justify-between items-center mb-3">
+                    <span className="text-xs font-bold flex items-center gap-1.5 text-brand">
+                      <Clapperboard size={16} />
+                      <span>Выберите Reels для отправки другу</span>
+                    </span>
+                    <button onClick={() => setShowVideoPicker(false)} className="text-slate-400 hover:text-slate-600 cursor-pointer">
+                      <X size={16} />
+                    </button>
+                  </div>
+                  <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+                    {reels.map((r) => {
+                      const rAuthor = users.find(u => u.uid === r.userId);
+                      return (
+                        <div 
+                          key={r.id}
+                          onClick={async () => {
+                            await dbService.sendMessage(activeConvId, currentUser.uid, "Посмотри это Reels! 🎬", null, null, r.id);
+                            setShowVideoPicker(false);
+                          }}
+                          className="w-28 shrink-0 aspect-[9/14] rounded-xl overflow-hidden relative border border-theme-lightBorder dark:border-theme-darkBorder cursor-pointer hover:scale-105 transition-transform group bg-slate-950 shadow-md"
+                        >
+                          <img src={r.coverURL || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400'} alt="Reel" className="w-full h-full object-cover" />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-2 flex flex-col justify-between">
+                            <span className="text-[9px] font-bold text-white truncate">@{rAuthor?.username}</span>
+                            <span className="text-[9px] font-extrabold text-white bg-brand px-1.5 py-0.5 rounded text-center shadow-sm">
+                              Отправить ▶
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+              )}
+            </AnimatePresence>
+
             {/* Message Input Box Form */}
-            <form onSubmit={handleSendMessage} className="p-4 border-t border-theme-lightBorder dark:border-theme-darkBorder bg-theme-lightCard dark:bg-theme-darkCard flex gap-3 transition-colors duration-200">
+            <form onSubmit={handleSendMessage} className="p-4 border-t border-theme-lightBorder dark:border-theme-darkBorder bg-theme-lightCard dark:bg-theme-darkCard flex gap-2.5 transition-colors duration-200">
+              <button 
+                type="button"
+                onClick={() => setShowVideoPicker(!showVideoPicker)}
+                className="p-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl transition-all cursor-pointer flex items-center justify-center shrink-0"
+                title="Отправить Reels / видео"
+              >
+                <Clapperboard size={18} className="text-brand" />
+              </button>
+
               <input 
                 type="text"
                 placeholder="Напишите сообщение..."
@@ -283,10 +376,11 @@ export default function DirectPage() {
                 onChange={(e) => setText(e.target.value)}
                 className="flex-1 bg-slate-100 dark:bg-slate-800 border border-theme-lightBorder dark:border-theme-darkBorder rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-brand"
               />
+
               <button 
                 type="submit"
                 disabled={!text.trim()}
-                className="p-2.5 bg-brand hover:bg-brand-dark text-white rounded-xl disabled:opacity-50 transition-colors shadow-md shadow-brand/15 cursor-pointer"
+                className="p-2.5 bg-brand hover:bg-brand-dark text-white rounded-xl disabled:opacity-50 transition-colors shadow-md shadow-brand/15 cursor-pointer shrink-0"
               >
                 <Send size={18} />
               </button>

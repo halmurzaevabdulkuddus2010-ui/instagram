@@ -181,6 +181,11 @@ export default function ProfilePage() {
               <div className="flex items-center justify-center md:justify-start gap-1.5 mb-1">
                 <h1 className="text-xl font-bold">{profileUser.displayName}</h1>
                 {profileUser.isAdmin && <ShieldCheck size={18} className="text-yellow-500" title="Администратор" />}
+                {profileUser.isVerified && (
+                  <span className="w-5 h-5 rounded-full bg-cyan-500 text-white flex items-center justify-center text-[10px] font-bold shadow-sm shrink-0" title="Подтвержденный аккаунт">
+                    ✓
+                  </span>
+                )}
               </div>
               <p className="text-xs text-theme-lightMuted dark:text-theme-darkMuted font-semibold">@{profileUser.username}</p>
             </div>
@@ -237,6 +242,15 @@ export default function ProfilePage() {
                         title="Отправить сообщение"
                       >
                         <MessageSquare size={16} />
+                      </button>
+                    )}
+
+                    {profileUser.username === 'akaktish' && (
+                      <button 
+                        onClick={() => navigate('/akaktish')}
+                        className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-xs font-extrabold bg-gradient-to-r from-cyan-500 to-blue-600 text-white shadow-md shadow-cyan-500/20 hover:scale-105 transition-all cursor-pointer shrink-0"
+                      >
+                        🦷 Записаться к врачу
                       </button>
                     )}
                   </>

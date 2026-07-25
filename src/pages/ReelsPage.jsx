@@ -31,12 +31,35 @@ export default function ReelsPage() {
     };
   }, []);
 
+  const handleCreateReelClick = () => {
+    window.dispatchEvent(new CustomEvent('open_create_modal', { detail: { type: 'reel' } }));
+  };
+
   return (
-    <div className="w-full max-w-md mx-auto h-[calc(100vh-3.5rem)] md:h-[calc(100vh-2rem)] md:my-4 flex items-center justify-center">
+    <div className="w-full max-w-md mx-auto h-[calc(100vh-3.5rem)] md:h-[calc(100vh-2rem)] md:my-4 flex flex-col items-center justify-center relative">
+      {/* Top Header Bar inside Reels */}
+      <div className="absolute top-3 inset-x-3 z-30 flex items-center justify-between pointer-events-auto">
+        <span className="text-sm font-extrabold text-white drop-shadow-md bg-black/40 px-3 py-1 rounded-xl backdrop-blur-md">
+          Reels 🎬
+        </span>
+        <button
+          onClick={handleCreateReelClick}
+          className="px-3.5 py-1.5 bg-gradient-to-r from-purple-600 to-brand hover:scale-105 text-white rounded-xl text-xs font-extrabold shadow-lg shadow-purple-500/30 flex items-center gap-1.5 transition-all cursor-pointer"
+        >
+          <span>+ Добавить Reels</span>
+        </button>
+      </div>
+
       {reels.length === 0 ? (
-        <div className="text-center p-8 bg-theme-lightCard dark:bg-theme-darkCard border border-theme-lightBorder dark:border-theme-darkBorder rounded-2xl">
-          <p className="text-sm font-semibold">Нет доступных Reels</p>
-          <p className="text-xs text-slate-500 mt-1">Опубликуйте первое короткое видео!</p>
+        <div className="text-center p-8 bg-theme-lightCard dark:bg-theme-darkCard border border-theme-lightBorder dark:border-theme-darkBorder rounded-3xl shadow-xl flex flex-col items-center gap-4">
+          <p className="text-sm font-bold">Нет доступных Reels</p>
+          <p className="text-xs text-slate-500">Опубликуйте первое короткое видео!</p>
+          <button
+            onClick={handleCreateReelClick}
+            className="px-5 py-2.5 bg-brand hover:bg-brand-dark text-white rounded-xl text-xs font-extrabold shadow-lg transition-all"
+          >
+            🎬 Создать первый Reels
+          </button>
         </div>
       ) : (
         <div className="reels-container w-full h-full overflow-y-scroll no-scrollbar snap-y snap-mandatory bg-black md:rounded-3xl shadow-2xl relative">
@@ -63,8 +86,11 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted }) {
   const [isSaved, setIsSaved] = useState(false);
   const [showHeartPop, setShowHeartPop] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [showShareModal, setShowShareModal] = useState(false);
+  const [conversations, setConversations] = useState([]);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState('');
+  const [videoError, setVideoError] = useState(false);
   
   const creator = users.find(u => u.uid === reel.userId);
 
@@ -84,17 +110,28 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted }) {
     return unsubscribe;
   }, [showComments, reel.id]);
 
+  // Subscribe to conversations for sharing
+  useEffect(() => {
+    if (!showShareModal) return;
+    const unsubscribe = dbService.subscribeToConversations(currentUser.uid, setConversations);
+    return unsubscribe;
+  }, [showShareModal, currentUser.uid]);
+
   // Intersection Observer for autoplay & views increment
   useEffect(() => {
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          videoRef.current?.play().catch(() => {});
+          if (!videoError) {
+            videoRef.current?.play().catch(() => {});
+          }
           // Increment views
           dbService.incrementReelViews(reel.id);
         } else {
-          videoRef.current?.pause();
-          videoRef.current.currentTime = 0;
+          if (!videoError && videoRef.current) {
+            videoRef.current.pause();
+            videoRef.current.currentTime = 0;
+          }
         }
       });
     }, { threshold: 0.6 });
@@ -108,7 +145,7 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted }) {
         observer.unobserve(videoRef.current);
       }
     };
-  }, [reel.id]);
+  }, [reel.id, videoError]);
 
   // Double tap to like
   let lastTap = 0;
@@ -129,7 +166,6 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted }) {
   };
 
   const handleSave = () => {
-    // Treat reel like post save
     dbService.savePost(reel.id, currentUser.uid);
     setIsSaved(!isSaved);
   };
@@ -147,20 +183,73 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted }) {
     }
   };
 
+  const handleShareReel = async (convId) => {
+    try {
+      await dbService.sendMessage(convId, currentUser.uid, "Отправил Reels 🎬", null, null, reel.id);
+      alert("Reels успешно отправлен другу в чат!");
+      setShowShareModal(false);
+    } catch (e) {
+      alert("Не удалось отправить Reels");
+    }
+  };
+
+  const getYouTubeId = (url) => {
+    if (!url) return null;
+    if (url.startsWith('youtube:')) return url.split(':')[1];
+    if (url.includes('youtube.com') || url.includes('youtu.be')) {
+      const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+      const match = url.match(regExp);
+      return (match && match[2].length === 11) ? match[2] : null;
+    }
+    return null;
+  };
+
+  const ytId = getYouTubeId(reel.mediaURL);
+
   return (
     <div 
-      className="reel-card w-full h-full snap-start relative flex flex-col justify-end select-none"
+      className="reel-card w-full h-full snap-start relative flex flex-col justify-end select-none animate-fade-in"
       onClick={handleDoubleTap}
     >
-      {/* Video element */}
-      <video 
-        ref={videoRef}
-        src={reel.mediaURL}
-        loop
-        muted={isMuted}
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover z-0"
-      />
+      {/* Video element or YouTube iframe or Fallback Cover */}
+      {ytId ? (
+        <iframe 
+          src={`https://www.youtube.com/embed/${ytId}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&playlist=${ytId}&controls=1&modestbranding=1&rel=0`}
+          className="absolute inset-0 w-full h-full border-0 z-0"
+          allow="autoplay; encrypted-media; picture-in-picture"
+          allowFullScreen
+          title="YouTube Video"
+        />
+      ) : videoError ? (
+        <img 
+          src={reel.coverURL || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80'} 
+          alt="Video Cover" 
+          className="absolute inset-0 w-full h-full object-cover z-0"
+        />
+      ) : (
+        <video 
+          ref={videoRef}
+          src={reel.mediaURL}
+          loop
+          muted={isMuted}
+          playsInline
+          onError={() => setVideoError(true)}
+          className="absolute inset-0 w-full h-full object-cover z-0"
+        />
+      )}
+
+      {/* Red YouTube Button Link Overlay for A4 or YouTube clips */}
+      {(ytId || reel.userId === 'vlad_a4') && (
+        <a 
+          href={ytId ? `https://www.youtube.com/watch?v=${ytId}` : 'https://www.youtube.com/@A4a4a4a4'} 
+          target="_blank" 
+          rel="noopener noreferrer"
+          className="absolute top-6 right-6 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-[10px] font-extrabold flex items-center gap-1.5 z-20 shadow-lg cursor-pointer transition-all hover:scale-105"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <span>Смотреть на YouTube 📺</span>
+        </a>
+      )}
 
       {/* Shadow gradient overlays */}
       <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none z-10" />
@@ -235,8 +324,18 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted }) {
         <button 
           onClick={(e) => { e.stopPropagation(); handleRepost(); }}
           className="p-2.5 rounded-full bg-black/40 hover:bg-black/60 hover:scale-105 transition-all text-white hover:text-brand"
+          title="Репост"
         >
           <Repeat2 size={22} />
+        </button>
+
+        {/* Send / Share to Direct Chat */}
+        <button 
+          onClick={(e) => { e.stopPropagation(); setShowShareModal(true); }}
+          className="p-2.5 rounded-full bg-black/40 hover:bg-black/60 hover:scale-105 transition-all text-white hover:text-brand"
+          title="Поделиться Reels в чате"
+        >
+          <Send size={22} />
         </button>
 
         {/* Bookmark Save */}
@@ -332,6 +431,67 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted }) {
               </form>
             </motion.div>
           </>
+        )}
+      </AnimatePresence>
+
+      {/* Share Reel Modal Dialog */}
+      <AnimatePresence>
+        {showShareModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4" onClick={(e) => e.stopPropagation()}>
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowShareModal(false)} />
+            <motion.div 
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="relative w-full max-w-sm rounded-2xl border border-theme-lightBorder dark:border-theme-darkBorder bg-theme-lightCard dark:bg-theme-darkCard text-theme-lightText dark:text-theme-darkText p-6 shadow-2xl z-10 transition-colors"
+            >
+              <h3 className="text-md font-extrabold mb-4 flex items-center gap-2">
+                <Send size={18} className="text-brand" />
+                <span>Отправить Reels другу</span>
+              </h3>
+              <div className="flex flex-col gap-2 max-h-60 overflow-y-auto pr-1 mb-4">
+                {conversations.length === 0 ? (
+                  <p className="text-xs text-theme-lightMuted dark:text-theme-darkMuted italic text-center py-4">
+                    Нет активных бесед. Перейдите в Сообщения, чтобы начать чат!
+                  </p>
+                ) : (
+                  conversations.map(conv => {
+                    const recipientUid = conv.participants.find(p => p !== currentUser.uid);
+                    const recipient = users.find(u => u.uid === recipientUid);
+                    if (!recipient) return null;
+                    return (
+                      <button 
+                        key={conv.id}
+                        onClick={() => handleShareReel(conv.id)}
+                        className="flex items-center justify-between p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-left w-full cursor-pointer"
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <img 
+                            src={recipient.photoURL} 
+                            alt={recipient.displayName} 
+                            className="w-9 h-9 rounded-full object-cover ring-1 ring-brand/30"
+                          />
+                          <div>
+                            <p className="text-xs font-bold leading-tight">{recipient.displayName}</p>
+                            <p className="text-[10px] text-slate-400 leading-tight">@{recipient.username}</p>
+                          </div>
+                        </div>
+                        <span className="text-[10px] font-extrabold text-white bg-brand px-3 py-1.5 rounded-lg shadow-sm hover:scale-105 transition-all">
+                          Отправить
+                        </span>
+                      </button>
+                    );
+                  })
+                )}
+              </div>
+              <button 
+                onClick={() => setShowShareModal(false)}
+                className="w-full py-2 bg-slate-100 dark:bg-slate-800 text-xs font-semibold rounded-xl text-center cursor-pointer"
+              >
+                Отмена
+              </button>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>

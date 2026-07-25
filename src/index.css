@@ -85,6 +85,32 @@
   scroll-snap-align: start;
 }
 
+@utility apple-glass {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+
+  .dark & {
+    background: rgba(21, 29, 42, 0.75);
+    border: 1px solid rgba(30, 41, 59, 0.8);
+  }
+}
+
+@utility apple-card {
+  border-radius: 1.75rem; /* 28px */
+  box-shadow: 0 10px 30px -10px rgba(0, 194, 203, 0.12);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@utility gradient-cyan-blue {
+  background: linear-gradient(135deg, #00C2CB 0%, #0284C7 100%);
+}
+
+@utility gradient-navy-cyan {
+  background: linear-gradient(135deg, #0F172A 0%, #0284C7 50%, #00C2CB 100%);
+}
+
 body {
   @apply bg-theme-lightBg text-theme-lightText font-sans transition-colors duration-205 overflow-x-hidden;
   -webkit-tap-highlight-color: transparent;

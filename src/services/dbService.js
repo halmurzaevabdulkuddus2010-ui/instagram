@@ -22,6 +22,23 @@ const KEYS = {
 
 // Initialize localStorage with seed data if empty
 const initMockDB = () => {
+  const currentVersion = localStorage.getItem('bloggerosh_db_version');
+  const REQUIRED_VERSION = 'v12';
+
+  if (currentVersion !== REQUIRED_VERSION) {
+    localStorage.setItem(KEYS.USERS, JSON.stringify(SEED_USERS));
+    localStorage.setItem(KEYS.POSTS, JSON.stringify(SEED_POSTS));
+    localStorage.setItem(KEYS.REELS, JSON.stringify(SEED_REELS));
+    localStorage.setItem(KEYS.STORIES, JSON.stringify(SEED_STORIES));
+    localStorage.setItem(KEYS.COMMENTS, JSON.stringify(SEED_COMMENTS));
+    localStorage.setItem(KEYS.CONVERSATIONS, JSON.stringify(SEED_CONVERSATIONS));
+    localStorage.setItem(KEYS.MESSAGES, JSON.stringify(SEED_MESSAGES));
+    localStorage.setItem(KEYS.REPORTS, JSON.stringify(SEED_REPORTS));
+    localStorage.setItem(KEYS.NOTIFICATIONS, JSON.stringify(SEED_NOTIFICATIONS));
+    localStorage.setItem('bloggerosh_db_version', REQUIRED_VERSION);
+    return;
+  }
+
   if (!localStorage.getItem(KEYS.USERS)) localStorage.setItem(KEYS.USERS, JSON.stringify(SEED_USERS));
   if (!localStorage.getItem(KEYS.POSTS)) localStorage.setItem(KEYS.POSTS, JSON.stringify(SEED_POSTS));
   if (!localStorage.getItem(KEYS.REELS)) localStorage.setItem(KEYS.REELS, JSON.stringify(SEED_REELS));
@@ -483,7 +500,7 @@ export const dbService = {
     return conv;
   },
 
-  sendMessage: async (conversationId, senderId, text, sharedPostId = null) => {
+  sendMessage: async (conversationId, senderId, text, sharedPostId = null, videoUrl = null, sharedReelId = null) => {
     const messages = JSON.parse(localStorage.getItem(KEYS.MESSAGES) || '[]');
     const newMessage = {
       id: `msg_${Date.now()}`,
@@ -491,6 +508,8 @@ export const dbService = {
       senderId,
       text,
       sharedPostId,
+      videoUrl,
+      sharedReelId,
       createdAt: new Date().toISOString()
     };
     messages.push(newMessage);

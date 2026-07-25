@@ -137,6 +137,11 @@ export default function Navigation({ onCreateClick }) {
               <Settings size={22} />
               <span>Настройки</span>
             </NavLink>
+
+            <NavLink to="/akaktish" className={({ isActive }) => isActive ? "flex items-center gap-4 p-3 rounded-xl bg-cyan-500/10 text-cyan-600 dark:text-cyan-400 font-extrabold transition-all duration-200 border border-cyan-500/20" : "flex items-center gap-4 p-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800/50 text-cyan-600 dark:text-cyan-400 font-bold transition-all duration-200"}>
+              <span className="w-2.5 h-2.5 rounded-full bg-cyan-450 animate-pulse" />
+              <span>АКАК ТИШ 🦷</span>
+            </NavLink>
           </nav>
         </div>
 
@@ -167,7 +172,14 @@ export default function Navigation({ onCreateClick }) {
         <span className="text-xl font-black bg-gradient-to-r from-brand to-instagram-pink bg-clip-text text-transparent">
           Blogger Osh
         </span>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
+          <button 
+            onClick={() => navigate('/akaktish')} 
+            className="text-cyan-600 dark:text-cyan-400 px-2 py-1 bg-cyan-500/10 border border-cyan-500/20 rounded-lg font-extrabold text-[11px] flex items-center gap-1 animate-pulse"
+          >
+            <span>🦷 Клиника</span>
+          </button>
+          
           <button onClick={toggleTheme} className="text-slate-700 dark:text-slate-300 p-1">
             {isDark ? <Sun size={20} className="text-yellow-500" /> : <Moon size={20} />}
           </button>

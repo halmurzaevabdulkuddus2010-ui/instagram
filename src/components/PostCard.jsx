@@ -18,11 +18,23 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const getYouTubeId = (url) => {
+  if (!url) return null;
+  if (url.startsWith('youtube:')) return url.split(':')[1];
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  }
+  return null;
+};
+
 export default function PostCard({ post, authors = [], currentUserId }) {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
   const [author, setAuthor] = useState(null);
   const [reposter, setReposter] = useState(null);
+  const ytId = getYouTubeId(post.mediaURL);
   const [showHeartPop, setShowHeartPop] = useState(false);
   const [showComments, setShowComments] = useState(false);
   const [comments, setComments] = useState([]);
@@ -31,6 +43,7 @@ export default function PostCard({ post, authors = [], currentUserId }) {
   const [showShareModal, setShowShareModal] = useState(false);
   const [conversations, setConversations] = useState([]);
   const [isMuted, setIsMuted] = useState(true);
+  const [videoError, setVideoError] = useState(false);
 
   // Fetch author & reposter metadata
   useEffect(() => {
@@ -251,24 +264,54 @@ export default function PostCard({ post, authors = [], currentUserId }) {
           />
         ) : (
           <div className="w-full h-full relative">
-            <video 
-              src={post.mediaURL} 
-              autoPlay 
-              loop 
-              muted={isMuted}
-              playsInline
-              className="w-full h-full object-contain pointer-events-none"
-            />
+            {ytId ? (
+              <>
+                <iframe 
+                  src={`https://www.youtube.com/embed/${ytId}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&playlist=${ytId}`}
+                  className="absolute inset-0 w-full h-full border-0 z-0"
+                  allow="autoplay; encrypted-media; picture-in-picture"
+                  allowFullScreen
+                  title="YouTube Video"
+                />
+                <a 
+                  href={`https://www.youtube.com/watch?v=${ytId}`} 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="absolute top-4 left-4 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white rounded-xl text-[10px] font-extrabold flex items-center gap-1.5 z-20 shadow-lg cursor-pointer transition-all hover:scale-105"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <span>Смотреть на YouTube 📺</span>
+                </a>
+              </>
+            ) : videoError ? (
+              <img 
+                src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=800&auto=format&fit=crop&q=80" 
+                alt="Video Fallback Cover" 
+                className="w-full h-full object-cover pointer-events-none"
+              />
+            ) : (
+              <video 
+                src={post.mediaURL} 
+                autoPlay 
+                loop 
+                muted={isMuted}
+                playsInline
+                onError={() => setVideoError(true)}
+                className="w-full h-full object-contain pointer-events-none"
+              />
+            )}
             {/* Audio Toggle Button */}
-            <button 
-              onClick={(e) => {
-                e.stopPropagation();
-                setIsMuted(!isMuted);
-              }}
-              className="absolute bottom-4 right-4 p-2 rounded-full bg-black/60 hover:bg-black/80 text-white z-10 transition-colors"
-            >
-              {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
-            </button>
+            {!videoError && (
+              <button 
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setIsMuted(!isMuted);
+                }}
+                className="absolute bottom-4 right-4 p-2 rounded-full bg-black/60 hover:bg-black/80 text-white z-10 transition-colors"
+              >
+                {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+              </button>
+            )}
           </div>
         )}
 
