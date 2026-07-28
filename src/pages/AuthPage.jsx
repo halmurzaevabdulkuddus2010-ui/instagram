@@ -116,13 +116,13 @@ export default function AuthPage() {
     <div className="min-h-screen w-full flex bg-theme-lightBg dark:bg-theme-darkBg transition-colors duration-200">
       
       {/* LEFT PANEL: Branding & Visuals (visible on desktop) */}
-      <div className="hidden lg:flex flex-1 flex-col justify-between p-12 bg-gradient-to-tr from-brand-dark via-brand to-instagram-pink text-white relative overflow-hidden">
+      <div className="hidden lg:flex flex-1 flex-col justify-between p-12 bg-gradient-to-tr from-brand-dark via-brand to-osh-pink text-white relative overflow-hidden">
         {/* Decorative backdrop patterns */}
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/20 via-transparent to-transparent pointer-events-none" />
         <div className="absolute -bottom-48 -left-48 w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none" />
 
         <div className="flex items-center gap-2 relative z-10">
-          <span className="text-3xl font-black tracking-wider">Blogger Osh</span>
+          <span className="text-3xl font-black tracking-wider">INSTAGRAM</span>
         </div>
 
         <div className="max-w-md relative z-10">
@@ -135,7 +135,7 @@ export default function AuthPage() {
         </div>
 
         <div className="flex justify-between text-xs text-white/50 relative z-10">
-          <span>© 2026 Blogger Osh. Все права защищены.</span>
+          <span>© 2026 INSTAGRAM. Все права защищены.</span>
           <span className="flex items-center gap-1">
             <Globe size={12} />
             <span>Русский (Кыргызстан)</span>
@@ -148,8 +148,8 @@ export default function AuthPage() {
         <div className="w-full max-w-md">
           {/* Logo on mobile */}
           <div className="lg:hidden text-center mb-8">
-            <h2 className="text-3xl font-black tracking-tight bg-gradient-to-r from-brand to-instagram-pink bg-clip-text text-transparent">
-              Blogger Osh
+            <h2 className="text-3xl font-black tracking-tight bg-gradient-to-r from-brand to-osh-pink bg-clip-text text-transparent">
+              INSTAGRAM
             </h2>
             <p className="text-xs text-theme-lightMuted dark:text-theme-darkMuted mt-1">
               Социальная сеть нового поколения
@@ -244,7 +244,7 @@ export default function AuthPage() {
             {mode === 'register' && (
               <form onSubmit={handleRegister} className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-theme-lightMuted dark:text-theme-darkMuted">Имя в Blogger Osh</label>
+                  <label className="text-xs font-bold uppercase tracking-wider text-theme-lightMuted dark:text-theme-darkMuted">Имя в INSTAGRAM</label>
                   <div className="relative">
                     <User size={16} className="absolute left-3.5 top-3.5 text-slate-400" />
                     <input 

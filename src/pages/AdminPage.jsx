@@ -3,10 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { dbService } from '../services/dbService';
 import { ShieldCheck, Users, FileText, AlertOctagon, Trash, ShieldAlert, Check } from 'lucide-react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 
 export default function AdminPage() {
   const { currentUser } = useAuth();
+  const navigate = useNavigate();
   const [users, setUsers] = useState([]);
   const [posts, setPosts] = useState([]);
   const [reports, setReports] = useState([]);
@@ -38,6 +39,11 @@ export default function AdminPage() {
     { label: 'Активные жалобы', value: pendingReports.length, icon: AlertOctagon, color: 'text-red-500' },
   ];
 
+  const handleStartChat = async (recipientId) => {
+    const conv = await dbService.startConversation(currentUser.uid, recipientId);
+    navigate(`/direct?c=${conv.id}`);
+  };
+
   const handleResolveReport = async (reportId) => {
     await dbService.resolveReport(reportId);
     alert("Жалоба отклонена");
@@ -45,7 +51,11 @@ export default function AdminPage() {
 
   const handleDeleteReportedPost = async (postId, reportId) => {
     if (window.confirm("Удалить эту публикацию в связи с нарушением правил?")) {
-      await dbService.deletePost(postId);
+      if (postId.startsWith('reel_')) {
+        await dbService.deleteReel(postId);
+      } else {
+        await dbService.deletePost(postId);
+      }
       await dbService.resolveReport(reportId);
       alert("Публикация успешно удалена, жалоба закрыта");
     }
@@ -79,7 +89,7 @@ export default function AdminPage() {
         <ShieldCheck size={28} className="text-yellow-500" />
         <div>
           <h1 className="text-xl font-bold">Панель управления модератора</h1>
-          <p className="text-xs text-theme-lightMuted dark:text-theme-darkMuted leading-tight">Администрирование Blogger Osh</p>
+          <p className="text-xs text-theme-lightMuted dark:text-theme-darkMuted leading-tight">Администрирование INSTAGRAM</p>
         </div>
       </div>
 
@@ -151,7 +161,7 @@ export default function AdminPage() {
                           {post.type === 'photo' ? (
                             <img src={post.mediaURL} alt="Preview" className="w-full h-full object-cover" />
                           ) : (
-                            <video src={post.mediaURL} muted className="w-full h-full object-cover" />
+                            <video src={`${post.mediaURL}#t=0.1`} preload="metadata" muted className="w-full h-full object-cover" />
                           )}
                         </div>
                         <div className="text-xs">
@@ -245,6 +255,12 @@ export default function AdminPage() {
                       <td className="p-4 text-right">
                         {!isSelf ? (
                           <div className="flex justify-end gap-2.5">
+                            <button 
+                              onClick={() => handleStartChat(user.uid)}
+                              className="px-2.5 py-1 bg-brand/10 hover:bg-brand text-brand hover:text-white rounded-lg font-bold text-[10px] cursor-pointer"
+                            >
+                              Чат
+                            </button>
                             <button 
                               onClick={() => handleRoleToggle(user)}
                               className="px-2.5 py-1 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 rounded-lg font-bold text-[10px] cursor-pointer"

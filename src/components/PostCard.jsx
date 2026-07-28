@@ -194,7 +194,7 @@ export default function PostCard({ post, authors = [], currentUserId }) {
                   exit={{ opacity: 0, scale: 0.95, y: -10 }}
                   className="absolute right-0 mt-2 w-48 rounded-xl bg-theme-lightCard dark:bg-theme-darkCard border border-theme-lightBorder dark:border-theme-darkBorder shadow-xl py-1.5 z-40"
                 >
-                  {(post.userId === currentUser.uid || currentUser.isAdmin) && (
+                  {(post.userId === currentUser.uid || post.repostedBy === currentUser.uid || currentUser.isAdmin) && (
                     <button 
                       onClick={handleDeletePost}
                       className="w-full flex items-center gap-2.5 px-4 py-2 text-left text-sm text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 font-medium"
@@ -203,7 +203,7 @@ export default function PostCard({ post, authors = [], currentUserId }) {
                       <span>Удалить пост</span>
                     </button>
                   )}
-                  {post.userId !== currentUser.uid && (
+                  {(post.userId !== currentUser.uid && post.repostedBy !== currentUser.uid) && (
                     <>
                       <button 
                         onClick={handleReportPost}

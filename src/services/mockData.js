@@ -1,13 +1,13 @@
-// Seed data for Blogger Osh (Instagram Clone) in Mock Mode
+// Seed data for INSTAGRAM in Mock Mode
 
 export const SEED_USERS = [
   {
     uid: "osh_admin",
     username: "osh_admin",
-    displayName: "Admin Blogger Osh",
+    displayName: "Admin INSTAGRAM",
     email: "admin@bloggerosh.kg",
     phone: "+996555112233",
-    bio: "Официальный аккаунт администратора Blogger Osh. Управление контентом и пользователями.",
+    bio: "Официальный аккаунт администратора INSTAGRAM. Управление контентом и пользователями",
     photoURL: "https://api.dicebear.com/7.x/avataaars/svg?seed=osh_admin&backgroundColor=b6e3f4",
     coverURL: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80",
     followers: ["traveler_osh", "photo_kg", "reels_star"],
@@ -115,53 +115,81 @@ export const SEED_POSTS = [
   }
 ];
 
-export const SEED_REELS = [
-  {
-    id: "reel_1",
-    userId: "reels_star",
-    type: "reel",
-    mediaURL: "https://assets.mixkit.co/videos/preview/mixkit-girl-in-neon-sign-in-nightcity-42284-large.mp4",
-    caption: "Огни ночного Оша 🌃✨ Неоновая эстетика нашего города. Любите ночные прогулки? #osh #nightlife #aesthetic #reels #mood",
-    hashtags: ["osh", "nightlife", "aesthetic", "reels", "mood"],
-    likes: ["traveler_osh", "photo_kg", "osh_admin"],
-    saves: ["traveler_osh"],
-    viewsCount: 1245,
-    commentsCount: 3,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_2",
-    userId: "traveler_osh",
-    type: "reel",
-    mediaURL: "https://assets.mixkit.co/videos/preview/mixkit-forest-stream-in-the-sunlight-529-large.mp4",
-    caption: "Где-то высоко в горах Алайского хребта. Чистейшая горная река и шум воды 🏔️💧 Лучший релакс! #nature #alaivalley #relax #mountains #kyrgyzstan",
-    hashtags: ["nature", "alaivalley", "relax", "mountains", "kyrgyzstan"],
-    likes: ["reels_star", "photo_kg"],
-    saves: [],
-    viewsCount: 980,
-    commentsCount: 2,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_3",
-    userId: "photo_kg",
-    type: "reel",
-    mediaURL: "https://assets.mixkit.co/videos/preview/mixkit-spinning-vinyl-record-player-42984-large.mp4",
-    caption: "Ретро вайб. Слушаем старые пластинки на виниле. У кого дома тоже был такой проигрыватель? 📻🎶 #vinyl #retro #music #reelsvideo #osh",
-    hashtags: ["vinyl", "retro", "music", "reelsvideo", "osh"],
-    likes: ["traveler_osh"],
-    saves: ["osh_admin"],
-    viewsCount: 654,
-    commentsCount: 1,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 18 * 60 * 60 * 1000).toISOString()
+const generateMockReels = () => {
+  const users = ["reels_star", "traveler_osh", "photo_kg", "osh_admin"];
+  const localVideos = [
+    {
+      url: "/videos/video1.mp4",
+      caption: "Невероятное подводное путешествие! Красота морских глубин, кристально чистая вода и коралловые рифы. 🌊🐠",
+      tags: ["travel", "nature", "ocean", "diving", "adventure"]
+    },
+    {
+      url: "/videos/video2.mp4",
+      caption: "Дикая природа нашего края! Бурый медведь ловит рыбу в чистейшей горной реке Алайского хребта. Потрясающие кадры! 🐻🏔️",
+      tags: ["nature", "wildlife", "kyrgyzstan", "mountains", "bear"]
+    },
+    {
+      url: "/videos/video3.mp4",
+      caption: "Создание 3D-анимации. Наш новый проект забавного короткометражного мультфильма про кролика! 🐰🎨",
+      tags: ["animation", "3d", "cartoon", "creative", "art"]
+    },
+    {
+      url: "/videos/video5.mp4",
+      caption: "Весна в городе Ош! Невероятное макро-видео цветения весенних бутонов в центральном парке. 🌸🌱",
+      tags: ["osh", "spring", "flowers", "nature", "macro"]
+    }
+  ];
+
+  const reels = [];
+  
+  const modifiers = [
+    "Снято на профессиональную камеру. Эстетика зашкаливает! ✨📸",
+    "Невероятная атмосфера. Делитесь этим видео с друзьями! ⚡📱",
+    "Выходные прошли с пользой. Как вам такой ракурс? 🏔️💯",
+    "Просто вау! Смотреть до конца со звуком 🔊🔥",
+    "Локации, от которых захватывает дух. Сохраняйте в закладки! 📍📌",
+    "Утренний вайб. Всем продуктивного дня и хорошего настроения! ☀️☕",
+    "За кулисами съемок. Самый сложный кадр за сегодня. 🎬🎬",
+    "Эмоции через край. Повторили бы такое? 🎢💥",
+    "Момент абсолютного спокойствия и слияния с миром. 🧘‍♂️🕊️",
+    "Короткий обзор сегодняшнего приключения. Поехали! 🚀🎒"
+  ];
+
+  for (let i = 1; i <= 100; i++) {
+    const videoTemplate = localVideos[(i - 1) % localVideos.length];
+    const modifier = modifiers[i % modifiers.length];
+    const user = users[i % users.length];
+    
+    const likes = [];
+    users.forEach(u => {
+      if (Math.random() > 0.4) likes.push(u);
+    });
+    
+    const saves = [];
+    users.forEach(u => {
+      if (Math.random() > 0.7) saves.push(u);
+    });
+
+    reels.push({
+      id: `reel_${i}`,
+      userId: user,
+      type: "reel",
+      mediaURL: videoTemplate.url,
+      caption: `${videoTemplate.caption} ${modifier}`,
+      hashtags: videoTemplate.tags,
+      likes: likes,
+      saves: saves,
+      viewsCount: Math.floor(Math.random() * 9000) + 100,
+      commentsCount: Math.floor(Math.random() * 5),
+      repostedFrom: null,
+      repostedBy: null,
+      createdAt: new Date(Date.now() - i * 3 * 3600 * 1000).toISOString()
+    });
   }
-];
+  return reels;
+};
+
+export const SEED_REELS = generateMockReels();
 
 export const SEED_STORIES = [
   {

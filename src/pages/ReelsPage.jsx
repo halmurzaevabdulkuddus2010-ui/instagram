@@ -11,7 +11,9 @@ import {
   Bookmark, 
   Volume2, 
   VolumeX, 
-  Eye 
+  Eye,
+  Trash2,
+  Play 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -20,6 +22,19 @@ export default function ReelsPage() {
   const [reels, setReels] = useState([]);
   const [users, setUsers] = useState([]);
   const [isMuted, setIsMuted] = useState(true);
+  const [activeIdx, setActiveIdx] = useState(0);
+
+  const handleScroll = (e) => {
+    const container = e.target;
+    const scrollPos = container.scrollTop;
+    const cardHeight = container.clientHeight;
+    if (cardHeight > 0) {
+      const index = Math.round(scrollPos / cardHeight);
+      if (index !== activeIdx && index >= 0 && index < reels.length) {
+        setActiveIdx(index);
+      }
+    }
+  };
 
   // Subscriptions
   useEffect(() => {
@@ -39,8 +54,11 @@ export default function ReelsPage() {
           <p className="text-xs text-slate-500 mt-1">Опубликуйте первое короткое видео!</p>
         </div>
       ) : (
-        <div className="reels-container w-full h-full overflow-y-scroll no-scrollbar snap-y snap-mandatory bg-black md:rounded-3xl shadow-2xl relative">
-          {reels.map((reel) => (
+        <div 
+          className="reels-container w-full h-full overflow-y-scroll no-scrollbar snap-y snap-mandatory bg-black md:rounded-3xl shadow-2xl relative"
+          onScroll={handleScroll}
+        >
+          {reels.map((reel, index) => (
             <ReelCard 
               key={reel.id} 
               reel={reel} 
@@ -48,6 +66,7 @@ export default function ReelsPage() {
               currentUser={currentUser} 
               isMuted={isMuted}
               setIsMuted={setIsMuted}
+              isActive={index === activeIdx}
             />
           ))}
         </div>
@@ -56,7 +75,7 @@ export default function ReelsPage() {
   );
 }
 
-function ReelCard({ reel, users, currentUser, isMuted, setIsMuted }) {
+function ReelCard({ reel, users, currentUser, isMuted, setIsMuted, isActive }) {
   const videoRef = useRef(null);
   const [author, setAuthor] = useState(null);
   const [isLiked, setIsLiked] = useState(false);
@@ -77,6 +96,12 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted }) {
     setIsSaved(reel.saves?.includes(currentUser.uid) || false);
   }, [reel, currentUser]);
 
+  useEffect(() => {
+    if (videoRef.current) {
+      videoRef.current.muted = isMuted;
+    }
+  }, [isMuted]);
+
   // Subscribe to comments
   useEffect(() => {
     if (!showComments) return;
@@ -84,45 +109,61 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted }) {
     return unsubscribe;
   }, [showComments, reel.id]);
 
-  // Intersection Observer for autoplay & views increment
+  // Handle play/pause based on active prop
   useEffect(() => {
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          videoRef.current?.play().catch(() => {});
-          // Increment views
-          dbService.incrementReelViews(reel.id);
-        } else {
-          videoRef.current?.pause();
-          videoRef.current.currentTime = 0;
-        }
-      });
-    }, { threshold: 0.6 });
-
-    if (videoRef.current) {
-      observer.observe(videoRef.current);
-    }
-
-    return () => {
+    if (isActive) {
       if (videoRef.current) {
-        observer.unobserve(videoRef.current);
+        videoRef.current.play()
+          .then(() => setIsPlaying(true))
+          .catch(() => setIsPlaying(false));
       }
-    };
-  }, [reel.id]);
+      dbService.incrementReelViews(reel.id);
+    } else {
+      if (videoRef.current) {
+        videoRef.current.pause();
+        videoRef.current.currentTime = 0;
+        setIsPlaying(false);
+      }
+    }
+  }, [isActive, reel.id]);
 
-  // Double tap to like
-  let lastTap = 0;
-  const handleDoubleTap = () => {
+  const [isPlaying, setIsPlaying] = useState(true);
+  const lastTapRef = useRef(0);
+  const tapTimeoutRef = useRef(null);
+
+  const handleTap = () => {
     const now = Date.now();
-    if (now - lastTap < 300) {
+    if (now - lastTapRef.current < 300) {
+      if (tapTimeoutRef.current) {
+        clearTimeout(tapTimeoutRef.current);
+        tapTimeoutRef.current = null;
+      }
       if (!isLiked) {
         dbService.likeReel(reel.id, currentUser.uid);
       }
       setShowHeartPop(true);
       setTimeout(() => setShowHeartPop(false), 800);
+    } else {
+      tapTimeoutRef.current = setTimeout(() => {
+        if (videoRef.current) {
+          if (videoRef.current.paused) {
+            videoRef.current.play().catch(() => {});
+            setIsPlaying(true);
+          } else {
+            videoRef.current.pause();
+            setIsPlaying(false);
+          }
+        }
+      }, 250);
     }
-    lastTap = now;
+    lastTapRef.current = now;
   };
+
+  useEffect(() => {
+    return () => {
+      if (tapTimeoutRef.current) clearTimeout(tapTimeoutRef.current);
+    };
+  }, []);
 
   const handleLike = () => {
     dbService.likeReel(reel.id, currentUser.uid);
@@ -150,17 +191,32 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted }) {
   return (
     <div 
       className="reel-card w-full h-full snap-start relative flex flex-col justify-end select-none"
-      onClick={handleDoubleTap}
+      onClick={handleTap}
     >
-      {/* Video element */}
       <video 
         ref={videoRef}
         src={reel.mediaURL}
         loop
-        muted={isMuted}
+        muted
         playsInline
+        preload="auto"
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
         className="absolute inset-0 w-full h-full object-cover z-0"
       />
+
+      {/* Play/Pause Overlay Icon */}
+      {!isPlaying && (
+        <div className="absolute inset-0 flex items-center justify-center bg-black/20 pointer-events-none z-10">
+          <motion.div 
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            className="p-5 rounded-full bg-black/60 text-white"
+          >
+            <Play size={40} fill="currentColor" />
+          </motion.div>
+        </div>
+      )}
 
       {/* Shadow gradient overlays */}
       <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none z-10" />
@@ -248,6 +304,23 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted }) {
         >
           <Bookmark size={22} className={isSaved ? 'fill-current' : ''} />
         </button>
+
+        {/* Delete Reel (if owner or admin) */}
+        {(reel.userId === currentUser.uid || currentUser.isAdmin) && (
+          <button 
+            onClick={async (e) => { 
+              e.stopPropagation(); 
+              if (window.confirm("Удалить этот Reel навсегда?")) {
+                await dbService.deleteReel(reel.id);
+                alert("Reel успешно удален!");
+              }
+            }}
+            className="p-2.5 rounded-full bg-black/40 hover:bg-red-600 hover:scale-105 transition-all text-red-500 hover:text-white"
+            title="Удалить Reel"
+          >
+            <Trash2 size={22} />
+          </button>
+        )}
       </div>
 
       {/* Double tap heart popup overlay */}

@@ -63,8 +63,8 @@ export default function Navigation({ onCreateClick }) {
         <div className="flex flex-col gap-8">
           {/* Logo */}
           <div className="flex items-center gap-2 px-2 cursor-pointer" onClick={() => navigate('/')}>
-            <span className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-brand to-instagram-pink bg-clip-text text-transparent">
-              Blogger Osh
+            <span className="text-2xl font-extrabold tracking-tight bg-gradient-to-r from-brand to-osh-pink bg-clip-text text-transparent">
+              INSTAGRAM
             </span>
           </div>
 
@@ -164,8 +164,8 @@ export default function Navigation({ onCreateClick }) {
 
       {/* --- MOBILE TOP BAR --- */}
       <header className="md:hidden flex items-center justify-between fixed top-0 left-0 w-full h-14 border-b border-theme-lightBorder dark:border-theme-darkBorder bg-theme-lightCard/90 dark:bg-theme-darkCard/90 backdrop-blur-md px-4 z-40 transition-colors duration-200">
-        <span className="text-xl font-black bg-gradient-to-r from-brand to-instagram-pink bg-clip-text text-transparent">
-          Blogger Osh
+        <span className="text-xl font-black bg-gradient-to-r from-brand to-osh-pink bg-clip-text text-transparent">
+          INSTAGRAM
         </span>
         <div className="flex items-center gap-4">
           <button onClick={toggleTheme} className="text-slate-700 dark:text-slate-300 p-1">

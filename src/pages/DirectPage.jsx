@@ -245,7 +245,7 @@ export default function DirectPage() {
                           {sharedPost.type === 'photo' ? (
                             <img src={sharedPost.mediaURL} alt="Shared" className="w-full h-full object-cover" />
                           ) : (
-                            <video src={sharedPost.mediaURL} muted playsInline className="w-full h-full object-cover" />
+                            <video src={`${sharedPost.mediaURL}#t=0.1`} preload="metadata" muted playsInline className="w-full h-full object-cover" />
                           )}
                         </div>
                         <div className="p-2.5">

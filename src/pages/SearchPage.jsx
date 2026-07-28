@@ -144,7 +144,7 @@ export default function SearchPage() {
                     {post.type === 'photo' ? (
                       <img src={post.mediaURL} alt="Post" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                     ) : (
-                      <video src={post.mediaURL} muted className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      <video src={`${post.mediaURL}#t=0.1`} preload="metadata" muted className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                     )}
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 text-white font-bold text-xs">
                       <span>❤️ {post.likes?.length || 0}</span>
@@ -177,7 +177,7 @@ export default function SearchPage() {
                 {post.type === 'photo' ? (
                   <img src={post.mediaURL} alt="Post" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 ) : (
-                  <video src={post.mediaURL} muted className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                  <video src={`${post.mediaURL}#t=0.1`} preload="metadata" muted className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 )}
                 <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3.5 text-white font-bold text-xs">
                   <span>❤️ {post.likes?.length || 0}</span>
