@@ -23,7 +23,7 @@ const KEYS = {
 // Initialize localStorage with seed data if empty
 const initMockDB = () => {
   const currentVersion = localStorage.getItem('bloggerosh_db_version');
-  const REQUIRED_VERSION = 'v12';
+  const REQUIRED_VERSION = 'v17';
 
   if (currentVersion !== REQUIRED_VERSION) {
     localStorage.setItem(KEYS.USERS, JSON.stringify(SEED_USERS));

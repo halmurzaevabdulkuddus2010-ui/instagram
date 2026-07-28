@@ -20,6 +20,7 @@ export default function ReelsPage() {
   const [reels, setReels] = useState([]);
   const [users, setUsers] = useState([]);
   const [isMuted, setIsMuted] = useState(true);
+  const [activeCategory, setActiveCategory] = useState('all'); // 'all' | 'cartoons' | 'a4'
 
   // Subscriptions
   useEffect(() => {
@@ -35,35 +36,103 @@ export default function ReelsPage() {
     window.dispatchEvent(new CustomEvent('open_create_modal', { detail: { type: 'reel' } }));
   };
 
+  // Filter reels based on category selection
+  const filteredReels = reels.filter(r => {
+    if (activeCategory === 'masha') {
+      return r.userId === 'masha_medved' || r.caption?.toLowerCase().includes('маша') || r.hashtags?.includes('машаимедведь') || r.hashtags?.includes('masha');
+    }
+    if (activeCategory === 'cartoons') {
+      const isCartoonTag = r.hashtags?.some(h => ['cartoon', 'мультики', 'animation', 'anime', 'kids', 'dragon', '3d', 'машаимедведь', 'masha'].includes(h));
+      const isCartoonUser = r.userId === 'cartoon_master' || r.userId === 'masha_medved';
+      const isCartoonCaption = r.caption?.toLowerCase().includes('мульт') || r.caption?.toLowerCase().includes('cartoon') || r.caption?.toLowerCase().includes('маша');
+      return isCartoonTag || isCartoonUser || isCartoonCaption;
+    }
+    if (activeCategory === 'a4') {
+      return r.userId === 'vlad_a4' || r.hashtags?.includes('a4');
+    }
+    return true;
+  });
+
   return (
     <div className="w-full max-w-md mx-auto h-[calc(100vh-3.5rem)] md:h-[calc(100vh-2rem)] md:my-4 flex flex-col items-center justify-center relative">
       {/* Top Header Bar inside Reels */}
-      <div className="absolute top-3 inset-x-3 z-30 flex items-center justify-between pointer-events-auto">
-        <span className="text-sm font-extrabold text-white drop-shadow-md bg-black/40 px-3 py-1 rounded-xl backdrop-blur-md">
-          Reels 🎬
-        </span>
-        <button
-          onClick={handleCreateReelClick}
-          className="px-3.5 py-1.5 bg-gradient-to-r from-purple-600 to-brand hover:scale-105 text-white rounded-xl text-xs font-extrabold shadow-lg shadow-purple-500/30 flex items-center gap-1.5 transition-all cursor-pointer"
-        >
-          <span>+ Добавить Reels</span>
-        </button>
+      <div className="absolute top-3 inset-x-3 z-30 flex flex-col gap-2 pointer-events-auto">
+        <div className="flex items-center justify-between">
+          <span className="text-sm font-extrabold text-white drop-shadow-md bg-black/50 px-3 py-1 rounded-xl backdrop-blur-md flex items-center gap-1.5">
+            <span>Reels</span>
+            <span className="text-purple-400">🎬</span>
+          </span>
+          
+          <button
+            onClick={handleCreateReelClick}
+            className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-brand hover:scale-105 text-white rounded-xl text-xs font-extrabold shadow-lg shadow-purple-500/30 flex items-center gap-1 transition-all cursor-pointer"
+          >
+            <span>+ Добавить Reels</span>
+          </button>
+        </div>
+
+        {/* Category Filters Pill Tabs */}
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
+          <button 
+            onClick={() => setActiveCategory('all')}
+            className={`px-3 py-1 rounded-full text-[11px] font-extrabold backdrop-blur-md transition-all cursor-pointer ${
+              activeCategory === 'all'
+                ? 'bg-white text-black shadow-lg scale-105'
+                : 'bg-black/60 text-white/80 hover:bg-black/80'
+            }`}
+          >
+            🎬 Все
+          </button>
+
+          <button 
+            onClick={() => setActiveCategory('masha')}
+            className={`px-3 py-1 rounded-full text-[11px] font-extrabold backdrop-blur-md transition-all flex items-center gap-1 cursor-pointer ${
+              activeCategory === 'masha'
+                ? 'bg-pink-500 text-white shadow-lg scale-105 ring-2 ring-pink-300'
+                : 'bg-black/60 text-pink-300 hover:bg-black/80'
+            }`}
+          >
+            <span>👧🐻 Маша и Медведь</span>
+          </button>
+
+          <button 
+            onClick={() => setActiveCategory('cartoons')}
+            className={`px-3 py-1 rounded-full text-[11px] font-extrabold backdrop-blur-md transition-all flex items-center gap-1 cursor-pointer ${
+              activeCategory === 'cartoons'
+                ? 'bg-amber-400 text-black shadow-lg scale-105 ring-2 ring-amber-300'
+                : 'bg-black/60 text-amber-300 hover:bg-black/80'
+            }`}
+          >
+            <span>🍿 Мультфильмы</span>
+          </button>
+
+          <button 
+            onClick={() => setActiveCategory('a4')}
+            className={`px-3 py-1 rounded-full text-[11px] font-extrabold backdrop-blur-md transition-all flex items-center gap-1 cursor-pointer ${
+              activeCategory === 'a4'
+                ? 'bg-red-500 text-white shadow-lg scale-105'
+                : 'bg-black/60 text-red-300 hover:bg-black/80'
+            }`}
+          >
+            <span>⚡ Влад А4</span>
+          </button>
+        </div>
       </div>
 
-      {reels.length === 0 ? (
+      {filteredReels.length === 0 ? (
         <div className="text-center p-8 bg-theme-lightCard dark:bg-theme-darkCard border border-theme-lightBorder dark:border-theme-darkBorder rounded-3xl shadow-xl flex flex-col items-center gap-4">
-          <p className="text-sm font-bold">Нет доступных Reels</p>
-          <p className="text-xs text-slate-500">Опубликуйте первое короткое видео!</p>
+          <p className="text-sm font-bold">В этой категории пока нет видео</p>
+          <p className="text-xs text-slate-500">Опубликуйте первое короткое видео или мультфильм!</p>
           <button
             onClick={handleCreateReelClick}
             className="px-5 py-2.5 bg-brand hover:bg-brand-dark text-white rounded-xl text-xs font-extrabold shadow-lg transition-all"
           >
-            🎬 Создать первый Reels
+            🎬 Добавить видео / мультфильм
           </button>
         </div>
       ) : (
         <div className="reels-container w-full h-full overflow-y-scroll no-scrollbar snap-y snap-mandatory bg-black md:rounded-3xl shadow-2xl relative">
-          {reels.map((reel) => (
+          {filteredReels.map((reel) => (
             <ReelCard 
               key={reel.id} 
               reel={reel} 
@@ -211,28 +280,41 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted }) {
       className="reel-card w-full h-full snap-start relative flex flex-col justify-end select-none animate-fade-in"
       onClick={handleDoubleTap}
     >
-      {/* Video element or YouTube iframe or Fallback Cover */}
+      {/* Video element or YouTube iframe or Motion Animated Video Fallback */}
       {ytId ? (
         <iframe 
-          src={`https://www.youtube.com/embed/${ytId}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&playlist=${ytId}&controls=1&modestbranding=1&rel=0`}
+          src={`https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&playlist=${ytId}&controls=1&modestbranding=1&rel=0`}
           className="absolute inset-0 w-full h-full border-0 z-0"
-          allow="autoplay; encrypted-media; picture-in-picture"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
           allowFullScreen
           title="YouTube Video"
         />
       ) : videoError ? (
-        <img 
-          src={reel.coverURL || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80'} 
-          alt="Video Cover" 
-          className="absolute inset-0 w-full h-full object-cover z-0"
-        />
+        <div className="absolute inset-0 w-full h-full overflow-hidden bg-black z-0">
+          <motion.img 
+            animate={{ scale: [1, 1.15, 1], x: [0, -10, 0], y: [0, -15, 0] }}
+            transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
+            src={reel.coverURL || 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&auto=format&fit=crop&q=80'} 
+            alt="Animated Reel" 
+            className="w-full h-full object-cover"
+          />
+          {/* Animated Audio Equalizer Visualizer Overlay */}
+          <div className="absolute top-16 right-6 flex items-end gap-1 bg-black/40 px-3 py-1.5 rounded-full backdrop-blur-md">
+            <span className="w-1 h-4 bg-brand rounded-full animate-pulse" />
+            <span className="w-1 h-6 bg-purple-400 rounded-full animate-bounce" />
+            <span className="w-1 h-3 bg-pink-400 rounded-full animate-pulse" />
+            <span className="text-[10px] font-bold text-white ml-1">Анимированный Видео-Reel</span>
+          </div>
+        </div>
       ) : (
         <video 
           ref={videoRef}
           src={reel.mediaURL}
+          autoPlay
           loop
           muted={isMuted}
           playsInline
+          preload="auto"
           onError={() => setVideoError(true)}
           className="absolute inset-0 w-full h-full object-cover z-0"
         />
