@@ -513,10 +513,7 @@ export const SEED_REELS = [
     repostedBy: null,
     createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString()
   }
-  return reels;
-};
-
-export const SEED_REELS = generateMockReels();
+];
 
 export const SEED_STORIES = [
   {
