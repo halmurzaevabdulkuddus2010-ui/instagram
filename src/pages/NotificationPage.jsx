@@ -134,7 +134,7 @@ export default function NotificationPage() {
                     {post.type === 'photo' ? (
                       <img src={post.mediaURL} alt="Preview" className="w-full h-full object-cover" />
                     ) : (
-                      <video src={post.mediaURL} muted className="w-full h-full object-cover" />
+                      <video src={`${post.mediaURL}#t=0.1`} preload="metadata" muted className="w-full h-full object-cover" />
                     )}
                   </div>
                 )}

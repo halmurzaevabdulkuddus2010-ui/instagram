@@ -82,7 +82,7 @@ export default function ProfilePage() {
   const isFollowing = profileUser.followers?.includes(currentUser.uid);
   const isBlockedByMe = currentUser.blockedUsers?.includes(profileUser.uid);
   const hasBlockedMe = profileUser.blockedUsers?.includes(currentUser.uid);
-  const showContent = isOwnProfile || !profileUser.isPrivate || isFollowing;
+  const showContent = true;
 
   // Filter items
   const userPosts = posts.filter(p => p.userId === profileUser.uid && !p.repostedBy);
@@ -356,7 +356,7 @@ export default function ProfilePage() {
                     {post.type === 'photo' ? (
                       <img src={post.mediaURL} alt="Post" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                     ) : (
-                      <video src={post.mediaURL} muted className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      <video src={`${post.mediaURL}#t=0.1`} preload="metadata" muted className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                     )}
                     {/* Hover stat indicators */}
                     <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 text-white font-bold text-sm">
@@ -379,7 +379,7 @@ export default function ProfilePage() {
                     onClick={() => navigate('/reels')}
                     className="aspect-[9/16] bg-slate-900 overflow-hidden relative rounded-xl group cursor-pointer border border-theme-lightBorder dark:border-theme-darkBorder"
                   >
-                    <video src={reel.mediaURL} muted className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                    <video src={`${reel.mediaURL}#t=0.1`} preload="metadata" muted className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 text-white font-bold text-xs">
                       <span>▶️ {reel.viewsCount || 0}</span>
                       <span>❤️ {reel.likes?.length || 0}</span>
@@ -403,7 +403,7 @@ export default function ProfilePage() {
                     {post.type === 'photo' ? (
                       <img src={post.mediaURL} alt="Post" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                     ) : (
-                      <video src={post.mediaURL} muted className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                      <video src={`${post.mediaURL}#t=0.1`} preload="metadata" muted className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                     )}
                     <div className="absolute inset-0 bg-black/45 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 text-white font-bold text-sm">
                       <span>❤️ {post.likes?.length || 0}</span>

@@ -1,4 +1,4 @@
-// StoryViewerModal.jsx - Instagram-style full-screen stories viewer with progress bars
+// StoryViewerModal.jsx - Full-screen stories viewer with progress bars
 import React, { useState, useEffect } from 'react';
 import { X, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';

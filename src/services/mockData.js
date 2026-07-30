@@ -1,13 +1,13 @@
-// Seed data for Blogger Osh (Instagram Clone) in Mock Mode
+// Seed data for INSTAGRAM in Mock Mode
 
 export const SEED_USERS = [
   {
     uid: "osh_admin",
     username: "osh_admin",
-    displayName: "Admin Blogger Osh",
+    displayName: "Admin INSTAGRAM",
     email: "admin@bloggerosh.kg",
     phone: "+996555112233",
-    bio: "Официальный аккаунт администратора Blogger Osh. Управление контентом и пользователями.",
+    bio: "Официальный аккаунт администратора INSTAGRAM. Управление контентом и пользователями",
     photoURL: "https://api.dicebear.com/7.x/avataaars/svg?seed=osh_admin&backgroundColor=b6e3f4",
     coverURL: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80",
     followers: ["traveler_osh", "photo_kg", "reels_star"],
@@ -513,7 +513,10 @@ export const SEED_REELS = [
     repostedBy: null,
     createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString()
   }
-];
+  return reels;
+};
+
+export const SEED_REELS = generateMockReels();
 
 export const SEED_STORIES = [
   {

@@ -142,7 +142,7 @@ export default function FeedPage() {
           {/* Osh City Info Box */}
           <div className="p-4 bg-brand/5 border border-brand/10 rounded-2xl text-[11px] text-theme-lightMuted dark:text-theme-darkMuted leading-relaxed">
             <span className="font-bold text-brand block mb-1">О городе Ош:</span>
-            Ош — древнейший город Кыргызстана с 3000-летней историей. В центре города возвышается гора Сулайман-Тоо — объект Всемирного наследия ЮНЕСКО. Blogger Osh объединяет блогеров нашего любимого южного мегаполиса! 🗻☀️
+            Ош — древнейший город Кыргызстана с 3000-летней историей. В центре города возвышается гора Сулайман-Тоо — объект Всемирного наследия ЮНЕСКО. INSTAGRAM объединяет блогеров нашего любимого южного мегаполиса! 🗻☀️
           </div>
         </div>
       </aside>

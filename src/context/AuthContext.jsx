@@ -4,7 +4,7 @@ import { dbService } from '../services/dbService';
 
 const AuthContext = createContext();
 
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => useContext(AuthContext) || {};
 
 export const AuthProvider = ({ children }) => {
   const [currentUser, setCurrentUser] = useState(null);
@@ -82,7 +82,7 @@ export const AuthProvider = ({ children }) => {
         displayName: displayName.trim(),
         email: email.trim(),
         phone: '',
-        bio: 'Всем привет! Я в Blogger Osh. 👋',
+        bio: 'Всем привет! Я в INSTAGRAM. 👋',
         photoURL: `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}&backgroundColor=b6e3f4`,
         coverURL: 'https://images.unsplash.com/photo-1557683316-973673baf926?w=1200&auto=format&fit=crop&q=80',
         followers: [],
