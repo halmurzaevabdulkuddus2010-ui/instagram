@@ -4,6 +4,8 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import { ThemeProvider } from './context/ThemeContext';
 import Navigation from './components/Navigation';
 import CreatePostModal from './components/CreatePostModal';
+import CreateStoryModal from './components/CreateStoryModal';
+import LiveStreamModal from './components/LiveStreamModal';
 
 // Views
 import AuthPage from './pages/AuthPage';
@@ -21,6 +23,8 @@ function ProtectedLayout({ children }) {
   const { currentUser } = useAuth();
   const [isCreateOpen, setIsCreateOpen] = useState(false);
   const [createPostType, setCreatePostType] = useState('photo');
+  const [isLiveOpen, setIsLiveOpen] = useState(false);
+  const [isStoryOpen, setIsStoryOpen] = useState(false);
   const location = useLocation();
 
   useEffect(() => {
@@ -28,9 +32,18 @@ function ProtectedLayout({ children }) {
       setCreatePostType(e.detail?.type || 'photo');
       setIsCreateOpen(true);
     };
+    const handleOpenLive = () => setIsLiveOpen(true);
+    const handleOpenStory = () => setIsStoryOpen(true);
 
     window.addEventListener('open_create_modal', handleOpenModal);
-    return () => window.removeEventListener('open_create_modal', handleOpenModal);
+    window.addEventListener('open_live_modal', handleOpenLive);
+    window.addEventListener('open_story_modal', handleOpenStory);
+
+    return () => {
+      window.removeEventListener('open_create_modal', handleOpenModal);
+      window.removeEventListener('open_live_modal', handleOpenLive);
+      window.removeEventListener('open_story_modal', handleOpenStory);
+    };
   }, []);
 
   if (!currentUser) {
@@ -45,11 +58,18 @@ function ProtectedLayout({ children }) {
     setIsCreateOpen(true);
   };
 
+  const handleOpenLiveStream = () => {
+    setIsLiveOpen(true);
+  };
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-theme-lightBg dark:bg-theme-darkBg text-theme-lightText dark:text-theme-darkText transition-colors duration-200">
       
       {/* Navigation Bars */}
-      <Navigation onCreateClick={handleOpenGeneralCreate} />
+      <Navigation 
+        onCreateClick={handleOpenGeneralCreate} 
+        onLiveClick={handleOpenLiveStream}
+      />
 
       {/* Main Content Area */}
       <main className={`flex-1 pt-14 md:pt-0 pb-16 md:pb-0 md:pl-64 ${
@@ -66,6 +86,23 @@ function ProtectedLayout({ children }) {
           isOpen={isCreateOpen} 
           initialPostType={createPostType}
           onClose={() => setIsCreateOpen(false)} 
+        />
+      )}
+
+      {/* Shared Create Story Modal */}
+      {isStoryOpen && (
+        <CreateStoryModal 
+          isOpen={isStoryOpen} 
+          onClose={() => setIsStoryOpen(false)} 
+        />
+      )}
+
+      {/* Instagram Live Stream Modal */}
+      {isLiveOpen && (
+        <LiveStreamModal 
+          isOpen={isLiveOpen} 
+          currentUser={currentUser}
+          onClose={() => setIsLiveOpen(false)} 
         />
       )}
     </div>
@@ -215,4 +252,3 @@ export default function App() {
     </ErrorBoundary>
   );
 }
-

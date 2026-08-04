@@ -608,7 +608,17 @@ export const dbService = {
           replyText = `По вопросам сотрудничества и рекламы пишите мне в Директ. Я отвечу, как только освобожусь! 📈💼`;
         } else {
           // Fallback replies depending on sender identity
-          if (recipientId === "osh_admin") {
+          if (recipientId === "ai_assistant") {
+            if (lowerText.includes("хештег") || lowerText.includes("hashtag")) {
+              replyText = `Вот вирусные хештеги для твоего поста: #osh #kyrgyzstan #reels #viral #aesthetic #style 🚀✨`;
+            } else if (lowerText.includes("музык") || lowerText.includes("трек") || lowerText.includes("песн")) {
+              replyText = `Рекомендую добавить трек для Reels: 🎵 Phonk Drift Remix или 🎵 Classic Lofi Beats! Обязательно вставь их в ролик! 🎧🔥`;
+            } else if (lowerText.includes("идея") || lowerText.includes("пост") || lowerText.includes("reels")) {
+              replyText = `Идея для Reels: Сними видео 5 секунд с подписью-загадкой и трендовым битом! Виральность гарантирована 🎬💥`;
+            } else {
+              replyText = `Привет! Я твой виртуальный ИИ-ассистент Instagram 🤖 Задай мне вопрос, попроси придумать описание к фото, трек или идею для Reels! ✨`;
+            }
+          } else if (recipientId === "osh_admin") {
             replyText = `Здравствуйте! Я Администратор INSTAGRAM. Ваше обращение принято, я отвечу вам в ближайшее время. Спасибо за обращение! 🛡️✉️`;
           } else if (recipientId === "traveler_osh") {
             replyText = `Салам! Я сейчас в горах на съемках новой природы 🏔️. Вернусь в сеть — обязательно отвечу подробнее! 😉`;
@@ -823,5 +833,15 @@ export const dbService = {
       return true;
     }).sort((a, b) => (b.followers?.length || 0) - (a.followers?.length || 0))
       .slice(0, 5); // top 5 recommendations
+  },
+
+  updateProfileMusic: async (userId, musicData) => {
+    const users = JSON.parse(localStorage.getItem(KEYS.USERS) || '[]');
+    const user = users.find(u => u.uid === userId);
+    if (user) {
+      user.featuredMusic = musicData;
+      localStorage.setItem(KEYS.USERS, JSON.stringify(users));
+      triggerMockUpdate(KEYS.USERS);
+    }
   }
 };

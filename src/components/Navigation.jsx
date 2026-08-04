@@ -15,10 +15,11 @@ import {
   ShieldCheck, 
   LogOut, 
   Sun, 
-  Moon 
+  Moon,
+  Radio 
 } from 'lucide-react';
 
-export default function Navigation({ onCreateClick }) {
+export default function Navigation({ onCreateClick, onLiveClick }) {
   const { currentUser, logout } = useAuth();
   const { isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
@@ -84,6 +85,14 @@ export default function Navigation({ onCreateClick }) {
               <Clapperboard size={22} />
               <span>Reels</span>
             </NavLink>
+
+            <button 
+              onClick={onLiveClick} 
+              className="flex items-center gap-4 p-3 rounded-xl hover:bg-red-50 dark:hover:bg-red-950/30 text-red-500 font-semibold transition-all duration-200 text-left w-full cursor-pointer"
+            >
+              <Radio size={22} className="animate-pulse" />
+              <span>Прямой эфир 🔴</span>
+            </button>
 
             <NavLink to="/direct" className={({ isActive }) => isActive ? activeClass : inactiveClass}>
               <div className="relative">

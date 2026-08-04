@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { dbService } from '../services/dbService';
+import { soundEngine } from '../utils/soundEngine';
 import { 
   Grid, 
   Film, 
@@ -12,7 +12,9 @@ import {
   UserPlus, 
   UserMinus, 
   MessageSquare,
-  ShieldCheck
+  ShieldCheck,
+  Music,
+  Volume2
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -27,6 +29,7 @@ export default function ProfilePage() {
   const [users, setUsers] = useState([]);
   const [activeTab, setActiveTab] = useState('posts'); // 'posts' | 'reels' | 'saved'
   const [loading, setLoading] = useState(true);
+  const [isPlayingMusic, setIsPlayingMusic] = useState(false);
 
   const avatarInputRef = useRef(null);
   const coverInputRef = useRef(null);
@@ -278,11 +281,68 @@ export default function ProfilePage() {
 
         {/* Biography Block */}
         {profileUser.bio && (
-          <div className="px-6 pb-6 pt-2 border-t border-theme-lightBorder dark:border-theme-darkBorder text-sm leading-relaxed">
+          <div className="px-6 pb-4 pt-2 border-t border-theme-lightBorder dark:border-theme-darkBorder text-sm leading-relaxed">
             <span className="font-bold text-xs uppercase text-theme-lightMuted dark:text-theme-darkMuted tracking-wider block mb-1">О себе</span>
             <p className="text-slate-650 dark:text-slate-300 font-medium whitespace-pre-line">{profileUser.bio}</p>
           </div>
         )}
+
+        {/* Featured Music Player Badge */}
+        <div className="px-6 pb-6 pt-1">
+          <div className="flex items-center justify-between p-3.5 rounded-2xl bg-gradient-to-r from-purple-500/10 via-pink-500/10 to-brand/10 border border-purple-500/20 backdrop-blur-md">
+            <div className="flex items-center gap-3">
+              <button 
+                type="button"
+                onClick={() => {
+                  soundEngine.init();
+                  if (isPlayingMusic) {
+                    soundEngine.stop();
+                    setIsPlayingMusic(false);
+                  } else {
+                    soundEngine.playTrack(profileUser.featuredMusic?.audioGenre || 'general', 'profile');
+                    setIsPlayingMusic(true);
+                  }
+                }}
+                className="p-2.5 rounded-full bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-lg hover:scale-110 transition-transform cursor-pointer"
+              >
+                {isPlayingMusic ? <Volume2 size={18} className="animate-bounce" /> : <Music size={18} />}
+              </button>
+              <div>
+                <p className="text-xs font-extrabold flex items-center gap-1.5 text-purple-600 dark:text-purple-300 leading-tight">
+                  <span>🎵 Любимый трек профиля</span>
+                  {isPlayingMusic && <span className="w-2 h-2 rounded-full bg-emerald-500 animate-ping" />}
+                </p>
+                <p className="text-xs font-bold leading-tight mt-0.5">
+                  {profileUser.featuredMusic?.title || '🎵 Instagram Vibe Beats 🎧'}
+                </p>
+              </div>
+            </div>
+
+            {isOwnProfile && (
+              <button
+                type="button"
+                onClick={() => {
+                  const newTrack = prompt("Введите название вашего любимого трека в профиль:", profileUser.featuredMusic?.title || "🎵 Phonk Night Drive 🏎️");
+                  if (newTrack && newTrack.trim()) {
+                    dbService.updateProfileMusic(currentUser.uid, {
+                      title: newTrack.trim(),
+                      artist: currentUser.displayName,
+                      audioGenre: 'cars'
+                    });
+                    setProfileUser(prev => ({
+                      ...prev,
+                      featuredMusic: { title: newTrack.trim(), artist: currentUser.displayName, audioGenre: 'cars' }
+                    }));
+                    alert("Музыкальный трек профиля сохранен!");
+                  }
+                }}
+                className="px-3 py-1.5 bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl text-[11px] font-bold cursor-pointer transition-all"
+              >
+                Сменить трек ✏️
+              </button>
+            )}
+          </div>
+        </div>
       </div>
 
       {/* Private Profile Screen */}

@@ -2,6 +2,24 @@
 
 export const SEED_USERS = [
   {
+    uid: "ai_assistant",
+    username: "ai_assistant",
+    displayName: "AI ИИ-Помощник 🤖",
+    email: "ai@instagram.com",
+    phone: "+18005550199",
+    bio: "Умный виртуальный ИИ-ассистент Instagram 🤖 Задай любой вопрос, попроси придумать описание к фото, трек или идею для Reels!",
+    photoURL: "https://api.dicebear.com/7.x/bottts/svg?seed=ai_assistant&backgroundColor=c0f2fe",
+    coverURL: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80",
+    followers: ["traveler_osh", "photo_kg", "reels_star", "osh_admin"],
+    following: [],
+    blockedUsers: [],
+    isPrivate: false,
+    isAdmin: false,
+    isVerified: true,
+    featuredMusic: { title: "AI Cyber Beats 🤖⚡", artist: "Instagram AI", audioGenre: "a4" },
+    createdAt: new Date().toISOString()
+  },
+  {
     uid: "osh_admin",
     username: "osh_admin",
     displayName: "Admin INSTAGRAM",
@@ -761,6 +779,16 @@ export const SEED_COMMENTS = [
 
 export const SEED_CONVERSATIONS = [
   {
+    id: "conv_ai",
+    participants: ["osh_admin", "ai_assistant"],
+    lastMessage: "Привет! Я твой виртуальный ИИ-ассистент Instagram 🤖 Чем могу помочь?",
+    lastMessageAt: new Date().toISOString(),
+    unreadCount: {
+      osh_admin: 1,
+      ai_assistant: 0
+    }
+  },
+  {
     id: "conv_1",
     participants: ["traveler_osh", "reels_star"],
     lastMessage: "Ок, договорились, снимем коллаб завтра на Сулайман-Тоо!",
@@ -783,6 +811,14 @@ export const SEED_CONVERSATIONS = [
 ];
 
 export const SEED_MESSAGES = [
+  {
+    id: "msg_ai_1",
+    conversationId: "conv_ai",
+    senderId: "ai_assistant",
+    text: "Привет! Я твой виртуальный ИИ-ассистент Instagram 🤖 Задай мне любой вопрос, попроси придумать описание к фото, вирусные хештеги или музыку для Reels!",
+    sharedPostId: null,
+    createdAt: new Date().toISOString()
+  },
   {
     id: "msg_1",
     conversationId: "conv_1",

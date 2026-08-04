@@ -336,6 +336,15 @@ function WebcamStudio({ onCapture }) {
   );
 }
 
+const PRESET_FILTERS = [
+  { id: 'normal', name: 'Обычный 🌟', filterStyle: 'none' },
+  { id: 'vintage', name: 'Винтаж 📜', filterStyle: 'sepia(0.6) contrast(1.1) brightness(0.95)' },
+  { id: 'neon', name: 'Неон 🎆', filterStyle: 'contrast(1.4) saturate(1.8) hue-rotate(15deg)' },
+  { id: 'bw', name: 'B&W 🖤', filterStyle: 'grayscale(1) contrast(1.2)' },
+  { id: 'golden', name: 'Закат 🌅', filterStyle: 'sepia(0.3) saturate(1.4) hue-rotate(-10deg)' },
+  { id: 'cyber', name: 'Космос ❄️', filterStyle: 'hue-rotate(180deg) saturate(1.5)' }
+];
+
 export default function CreatePostModal({ isOpen, onClose, initialPostType = 'photo' }) {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
@@ -343,6 +352,7 @@ export default function CreatePostModal({ isOpen, onClose, initialPostType = 'ph
   const [caption, setCaption] = useState('');
   const [mediaSource, setMediaSource] = useState(initialPostType === 'reel' ? 'presets' : 'draw'); // 'draw' | 'presets' | 'upload' | 'camera' | 'url'
   const [mediaURL, setMediaURL] = useState('');
+  const [selectedFilter, setSelectedFilter] = useState('normal');
   const [loading, setLoading] = useState(false);
   const [preview, setPreview] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -485,27 +495,50 @@ export default function CreatePostModal({ isOpen, onClose, initialPostType = 'ph
           {/* Left Panel: Media Picker / Canvas Studio / Preview */}
           <div className="flex-1 bg-slate-950 flex flex-col items-center justify-center p-4 relative border-r border-theme-lightBorder dark:border-theme-darkBorder overflow-hidden">
             {preview || (mediaSource === 'url' && mediaURL) ? (
-              <div className="w-full h-full flex flex-col items-center justify-center relative rounded-2xl bg-black overflow-hidden group">
-                {postType === 'photo' ? (
-                  <img 
-                    src={preview || mediaURL} 
-                    alt="Preview" 
-                    className="max-w-full max-h-full object-contain"
-                  />
-                ) : (
-                  <video 
-                    src={preview || mediaURL} 
-                    controls 
-                    autoPlay
-                    loop
-                    className="max-w-full max-h-full object-contain"
-                  />
-                )}
+              <div className="w-full h-full flex flex-col items-center justify-between relative rounded-2xl bg-black overflow-hidden group p-2">
+                <div className="w-full flex-1 flex items-center justify-center overflow-hidden">
+                  {postType === 'photo' ? (
+                    <img 
+                      src={preview || mediaURL} 
+                      alt="Preview" 
+                      className="max-w-full max-h-full object-contain transition-all"
+                      style={{ filter: (PRESET_FILTERS.find(f => f.id === selectedFilter) || PRESET_FILTERS[0]).filterStyle }}
+                    />
+                  ) : (
+                    <video 
+                      src={preview || mediaURL} 
+                      controls 
+                      autoPlay
+                      loop
+                      className="max-w-full max-h-full object-contain transition-all"
+                      style={{ filter: (PRESET_FILTERS.find(f => f.id === selectedFilter) || PRESET_FILTERS[0]).filterStyle }}
+                    />
+                  )}
+                </div>
+
+                {/* Filter Selector Bar */}
+                <div className="w-full bg-slate-900/90 backdrop-blur-md p-2 rounded-xl flex items-center gap-1.5 overflow-x-auto no-scrollbar border border-slate-800 my-2">
+                  <span className="text-[10px] font-extrabold uppercase text-slate-400 shrink-0 mr-1">Фильтр:</span>
+                  {PRESET_FILTERS.map(f => (
+                    <button
+                      key={f.id}
+                      type="button"
+                      onClick={() => setSelectedFilter(f.id)}
+                      className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all shrink-0 border ${
+                        selectedFilter === f.id
+                          ? 'bg-brand text-white border-brand shadow-md scale-105'
+                          : 'bg-slate-800 text-slate-300 border-transparent hover:bg-slate-700'
+                      }`}
+                    >
+                      {f.name}
+                    </button>
+                  ))}
+                </div>
                 
                 <button 
                   type="button"
                   onClick={() => { setPreview(null); setMediaURL(''); }}
-                  className="absolute bottom-4 left-4 px-4 py-2 bg-red-600/90 hover:bg-red-600 text-white rounded-xl text-xs font-bold backdrop-blur-md shadow-lg transition-all hover:scale-105 flex items-center gap-1.5"
+                  className="px-4 py-2 bg-red-600/90 hover:bg-red-600 text-white rounded-xl text-xs font-bold backdrop-blur-md shadow-lg transition-all hover:scale-105 flex items-center gap-1.5 self-start"
                 >
                   <RefreshCw size={14} />
                   <span>Переделать / Изменить</span>
