@@ -5,6 +5,32 @@ import { dbService } from '../services/dbService';
 import { Search, User, Hash, Grid, Film, Sparkles, Play, X, Heart, MessageCircle, Layers } from 'lucide-react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
+const getYouTubeId = (url) => {
+  if (!url) return null;
+  if (url.startsWith('youtube:')) return url.split(':')[1];
+  if (url.includes('youtube.com') || url.includes('youtu.be')) {
+    const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+    const match = url.match(regExp);
+    return (match && match[2].length === 11) ? match[2] : null;
+  }
+  return null;
+};
+
+const getVideoThumbnail = (item) => {
+  if (item?.coverURL && !item.coverURL.startsWith('youtube:')) {
+    return item.coverURL;
+  }
+  const media = item?.mediaURL || item?.videoURL || '';
+  const ytId = getYouTubeId(media);
+  if (ytId) {
+    return `https://img.youtube.com/vi/${ytId}/hqdefault.jpg`;
+  }
+  if (media.startsWith('http') && !media.includes('googleapis.com')) {
+    return media;
+  }
+  return 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&auto=format&fit=crop&q=80';
+};
+
 export default function SearchPage() {
   const { currentUser } = useAuth();
   const navigate = useNavigate();
@@ -20,6 +46,7 @@ export default function SearchPage() {
 
   // Modal preview state for posts & videos
   const [selectedMedia, setSelectedMedia] = useState(null); // { item, author }
+  const [modalVideoError, setModalVideoError] = useState(false);
 
   // Subscriptions
   useEffect(() => {
@@ -71,6 +98,8 @@ export default function SearchPage() {
            u.displayName?.toLowerCase().includes(cleanQuery);
   }) : [];
 
+  const isFootballQuery = cleanQuery.includes('фудбол') || cleanQuery.includes('футбол') || cleanQuery.includes('foot') || cleanQuery.includes('месси') || cleanQuery.includes('роналду');
+
   // 2. Posts search results (photos & post videos)
   const foundPosts = cleanQuery ? posts.filter(p => {
     if (isUserBlocked(p.userId)) return false;
@@ -78,6 +107,11 @@ export default function SearchPage() {
     if (cleanQuery.startsWith('#')) {
       const tag = cleanQuery.slice(1);
       return p.hashtags?.some(t => t.toLowerCase().includes(tag));
+    }
+    if (isFootballQuery) {
+      const cap = (p.caption || '').toLowerCase();
+      const tags = (p.hashtags || []).map(t => t.toLowerCase());
+      return cap.includes('футбол') || cap.includes('фудбол') || cap.includes('football') || cap.includes('messi') || cap.includes('ronaldo') || cap.includes('sport') || tags.some(t => t.includes('футбол') || t.includes('фудбол') || t.includes('football') || t.includes('messi') || t.includes('ronaldo'));
     }
     return (
       p.caption?.toLowerCase().includes(cleanQuery) ||
@@ -97,6 +131,12 @@ export default function SearchPage() {
     if (cleanQuery.startsWith('#')) {
       const tag = cleanQuery.slice(1);
       return v.hashtags?.some(t => t.toLowerCase().includes(tag));
+    }
+    if (isFootballQuery) {
+      const cap = (v.caption || '').toLowerCase();
+      const audio = (v.audioTitle || '').toLowerCase();
+      const tags = (v.hashtags || []).map(t => t.toLowerCase());
+      return cap.includes('футбол') || cap.includes('фудбол') || cap.includes('football') || cap.includes('messi') || cap.includes('ronaldo') || cap.includes('sport') || audio.includes('футбол') || audio.includes('football') || tags.some(t => t.includes('футбол') || t.includes('фудбол') || t.includes('football') || t.includes('messi') || t.includes('ronaldo'));
     }
     return (
       v.caption?.toLowerCase().includes(cleanQuery) ||
@@ -124,6 +164,7 @@ export default function SearchPage() {
 
   // Open Media Modal
   const openMediaModal = (item) => {
+    setModalVideoError(false);
     const author = users.find(u => u.uid === item.userId);
     setSelectedMedia({ item, author });
   };
@@ -263,8 +304,11 @@ export default function SearchPage() {
                       className="aspect-[9/16] bg-slate-900 overflow-hidden relative rounded-2xl group cursor-pointer border border-theme-lightBorder dark:border-theme-darkBorder shadow-sm"
                     >
                       <img 
-                        src={video.coverURL || video.mediaURL} 
+                        src={getVideoThumbnail(video)} 
                         alt={video.caption || 'Video cover'} 
+                        onError={(e) => {
+                          e.target.src = 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&auto=format&fit=crop&q=80';
+                        }}
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                       />
                       
@@ -368,8 +412,11 @@ export default function SearchPage() {
                 }`}
               >
                 <img 
-                  src={item.coverURL || item.mediaURL} 
+                  src={getVideoThumbnail(item)} 
                   alt="Explore thumbnail" 
+                  onError={(e) => {
+                    e.target.src = 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&auto=format&fit=crop&q=80';
+                  }}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
 
@@ -404,22 +451,61 @@ export default function SearchPage() {
 
             {/* Media Content Box */}
             <div className="w-full md:w-3/5 bg-black flex items-center justify-center relative min-h-[300px] md:min-h-[500px]">
-              {selectedMedia.item.mediaKind === 'video' || selectedMedia.item.type === 'video' || selectedMedia.item.isReel ? (
-                <video 
-                  src={selectedMedia.item.mediaURL || selectedMedia.item.videoURL} 
-                  poster={selectedMedia.item.coverURL}
-                  controls 
-                  autoPlay 
-                  loop
-                  className="max-h-[75vh] w-full object-contain"
-                />
-              ) : (
-                <img 
-                  src={selectedMedia.item.mediaURL} 
-                  alt="Post preview" 
-                  className="max-h-[75vh] w-full object-contain"
-                />
-              )}
+              {(() => {
+                const mediaUrl = selectedMedia.item.mediaURL || selectedMedia.item.videoURL || '';
+                const ytId = getYouTubeId(mediaUrl);
+
+                if (ytId) {
+                  return (
+                    <iframe 
+                      src={`https://www.youtube.com/embed/${ytId}?autoplay=1&mute=0&loop=1&playlist=${ytId}`}
+                      className="w-full h-[75vh] border-0"
+                      allow="autoplay; encrypted-media; picture-in-picture"
+                      allowFullScreen
+                      title="YouTube Video"
+                    />
+                  );
+                }
+
+                if (selectedMedia.item.mediaKind === 'video' || selectedMedia.item.type === 'video' || selectedMedia.item.isReel) {
+                  if (modalVideoError) {
+                    return (
+                      <div className="w-full h-[75vh] flex flex-col items-center justify-center relative bg-black p-4">
+                        <img 
+                          src={selectedMedia.item.coverURL || 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&auto=format&fit=crop&q=80'} 
+                          alt="Football Cover" 
+                          className="max-h-[70vh] w-full object-cover rounded-2xl shadow-2xl opacity-90"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/30 flex flex-col items-center justify-center gap-2">
+                          <span className="text-6xl animate-bounce filter drop-shadow-2xl">⚽</span>
+                          <span className="px-4 py-1.5 bg-gradient-to-r from-amber-400 to-red-500 text-black font-black text-xs rounded-full shadow-2xl uppercase tracking-wider">
+                            🔥 GOOOOOAL! ⚽
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return (
+                    <video 
+                      src={mediaUrl} 
+                      poster={selectedMedia.item.coverURL}
+                      controls 
+                      autoPlay 
+                      loop
+                      onError={() => setModalVideoError(true)}
+                      className="max-h-[75vh] w-full object-contain"
+                    />
+                  );
+                }
+
+                return (
+                  <img 
+                    src={selectedMedia.item.mediaURL} 
+                    alt="Post preview" 
+                    className="max-h-[75vh] w-full object-contain"
+                  />
+                );
+              })()}
             </div>
 
             {/* Sidebar Details */}

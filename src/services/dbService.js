@@ -49,7 +49,7 @@ const checkAndSeed = (key, seedData) => {
 // Initialize localStorage with seed data if empty or corrupt
 const initMockDB = () => {
   const currentVersion = localStorage.getItem('bloggerosh_db_version');
-  const REQUIRED_VERSION = 'v17';
+  const REQUIRED_VERSION = 'v28';
 
   if (currentVersion !== REQUIRED_VERSION) {
     localStorage.setItem(KEYS.USERS, JSON.stringify(SEED_USERS));
@@ -62,6 +62,8 @@ const initMockDB = () => {
     localStorage.setItem(KEYS.REPORTS, JSON.stringify(SEED_REPORTS));
     localStorage.setItem(KEYS.NOTIFICATIONS, JSON.stringify(SEED_NOTIFICATIONS));
     localStorage.setItem('bloggerosh_db_version', REQUIRED_VERSION);
+
+    Object.values(KEYS).forEach(k => triggerMockUpdate(k));
     return;
   }
 
@@ -447,6 +449,11 @@ export const dbService = {
   },
 
   // Reels Actions
+  resetReels: () => {
+    localStorage.setItem(KEYS.REELS, JSON.stringify(SEED_REELS));
+    triggerMockUpdate(KEYS.REELS);
+  },
+
   createReel: async (reelData) => {
     const reels = JSON.parse(localStorage.getItem(KEYS.REELS) || '[]');
     const newReel = {

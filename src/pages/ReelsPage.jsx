@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { dbService } from '../services/dbService';
 import { Link } from 'react-router-dom';
+import { soundEngine } from '../utils/soundEngine';
 import { 
   Heart, 
   MessageCircle, 
@@ -13,7 +14,8 @@ import {
   VolumeX, 
   Eye,
   Trash2,
-  Play 
+  Play,
+  Music 
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -22,7 +24,8 @@ export default function ReelsPage() {
   const [reels, setReels] = useState([]);
   const [users, setUsers] = useState([]);
   const [isMuted, setIsMuted] = useState(true);
-  const [activeCategory, setActiveCategory] = useState('all'); // 'all' | 'cartoons' | 'a4'
+  const [activeCategory, setActiveCategory] = useState('all'); // 'all' | 'football' | 'cartoons' | 'a4'
+  const [activeIdx, setActiveIdx] = useState(0);
 
   // Subscriptions
   useEffect(() => {
@@ -40,17 +43,35 @@ export default function ReelsPage() {
 
   // Filter reels based on category selection
   const filteredReels = reels.filter(r => {
+    const text = `${r.caption || ''} ${(r.hashtags || []).join(' ')} ${r.audioTitle || ''}`.toLowerCase();
+    if (activeCategory === 'football' || activeCategory === 'sports') {
+      return (
+        r.userId === 'reels_star' ||
+        text.includes('фудбол') ||
+        text.includes('футбол') ||
+        text.includes('foot') ||
+        text.includes('messi') ||
+        text.includes('ronaldo') ||
+        text.includes('cr7') ||
+        text.includes('гол') ||
+        text.includes('мяч') ||
+        text.includes('спорт')
+      );
+    }
     if (activeCategory === 'masha') {
-      return r.userId === 'masha_medved' || r.caption?.toLowerCase().includes('маша') || r.hashtags?.includes('машаимедведь') || r.hashtags?.includes('masha');
+      return r.userId === 'masha_medved' || text.includes('маша') || text.includes('masha');
     }
     if (activeCategory === 'cartoons') {
-      const isCartoonTag = r.hashtags?.some(h => ['cartoon', 'мультики', 'animation', 'anime', 'kids', 'dragon', '3d', 'машаимедведь', 'masha'].includes(h));
-      const isCartoonUser = r.userId === 'cartoon_master' || r.userId === 'masha_medved';
-      const isCartoonCaption = r.caption?.toLowerCase().includes('мульт') || r.caption?.toLowerCase().includes('cartoon') || r.caption?.toLowerCase().includes('маша');
-      return isCartoonTag || isCartoonUser || isCartoonCaption;
+      return r.userId === 'cartoon_master' || r.userId === 'masha_medved' || text.includes('мульт') || text.includes('cartoon') || text.includes('anime') || text.includes('3d') || text.includes('маша');
     }
     if (activeCategory === 'a4') {
-      return r.userId === 'vlad_a4' || r.hashtags?.includes('a4');
+      return r.userId === 'vlad_a4' || text.includes('a4') || text.includes('влад');
+    }
+    if (activeCategory === 'cars') {
+      return text.includes('car') || text.includes('drift') || text.includes('supercar') || text.includes('speed') || text.includes('гонк') || text.includes('машин') || text.includes('bugatti') || text.includes('subaru');
+    }
+    if (activeCategory === 'nature') {
+      return text.includes('nature') || text.includes('ocean') || text.includes('dolphin') || text.includes('flower') || text.includes('природ') || text.includes('гор') || text.includes('animal');
     }
     return true;
   });
@@ -65,19 +86,45 @@ export default function ReelsPage() {
             <span className="text-purple-400">🎬</span>
           </span>
           
-          <button
-            onClick={handleCreateReelClick}
-            className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-brand hover:scale-105 text-white rounded-xl text-xs font-extrabold shadow-lg shadow-purple-500/30 flex items-center gap-1 transition-all cursor-pointer"
-          >
-            <span>+ Добавить Reels</span>
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => {
+                soundEngine.init();
+                setIsMuted(!isMuted);
+              }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-extrabold backdrop-blur-md transition-all flex items-center gap-1.5 cursor-pointer shadow-lg ${
+                isMuted
+                  ? 'bg-red-500/80 hover:bg-red-600 text-white animate-pulse'
+                  : 'bg-emerald-500/90 hover:bg-emerald-600 text-white ring-2 ring-emerald-300'
+              }`}
+              title={isMuted ? "Включить звук" : "Выключить звук"}
+            >
+              {isMuted ? <VolumeX size={15} /> : <Volume2 size={15} className="animate-bounce" />}
+              <span>{isMuted ? "🔊 Включить звук" : "🔊 Звук ВКЛ"}</span>
+            </button>
+            <button
+              onClick={() => {
+                dbService.resetReels();
+              }}
+              className="px-2.5 py-1.5 bg-black/60 hover:bg-black/80 text-white rounded-xl text-xs font-bold backdrop-blur-md transition-all cursor-pointer"
+              title="Обновить список видео"
+            >
+              <span>🔄 Обновить</span>
+            </button>
+            <button
+              onClick={handleCreateReelClick}
+              className="px-3 py-1.5 bg-gradient-to-r from-purple-600 to-brand hover:scale-105 text-white rounded-xl text-xs font-extrabold shadow-lg shadow-purple-500/30 flex items-center gap-1 transition-all cursor-pointer"
+            >
+              <span>+ Добавить Reels</span>
+            </button>
+          </div>
         </div>
 
         {/* Category Filters Pill Tabs */}
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5">
           <button 
             onClick={() => setActiveCategory('all')}
-            className={`px-3 py-1 rounded-full text-[11px] font-extrabold backdrop-blur-md transition-all cursor-pointer ${
+            className={`px-3 py-1 rounded-full text-[11px] font-extrabold backdrop-blur-md transition-all cursor-pointer shrink-0 ${
               activeCategory === 'all'
                 ? 'bg-white text-black shadow-lg scale-105'
                 : 'bg-black/60 text-white/80 hover:bg-black/80'
@@ -87,8 +134,19 @@ export default function ReelsPage() {
           </button>
 
           <button 
+            onClick={() => setActiveCategory('football')}
+            className={`px-3 py-1 rounded-full text-[11px] font-extrabold backdrop-blur-md transition-all flex items-center gap-1 cursor-pointer shrink-0 ${
+              activeCategory === 'football'
+                ? 'bg-emerald-500 text-white shadow-lg scale-105 ring-2 ring-emerald-300'
+                : 'bg-black/60 text-emerald-300 hover:bg-black/80'
+            }`}
+          >
+            <span>⚽ Футбол</span>
+          </button>
+
+          <button 
             onClick={() => setActiveCategory('masha')}
-            className={`px-3 py-1 rounded-full text-[11px] font-extrabold backdrop-blur-md transition-all flex items-center gap-1 cursor-pointer ${
+            className={`px-3 py-1 rounded-full text-[11px] font-extrabold backdrop-blur-md transition-all flex items-center gap-1 cursor-pointer shrink-0 ${
               activeCategory === 'masha'
                 ? 'bg-pink-500 text-white shadow-lg scale-105 ring-2 ring-pink-300'
                 : 'bg-black/60 text-pink-300 hover:bg-black/80'
@@ -99,7 +157,7 @@ export default function ReelsPage() {
 
           <button 
             onClick={() => setActiveCategory('cartoons')}
-            className={`px-3 py-1 rounded-full text-[11px] font-extrabold backdrop-blur-md transition-all flex items-center gap-1 cursor-pointer ${
+            className={`px-3 py-1 rounded-full text-[11px] font-extrabold backdrop-blur-md transition-all flex items-center gap-1 cursor-pointer shrink-0 ${
               activeCategory === 'cartoons'
                 ? 'bg-amber-400 text-black shadow-lg scale-105 ring-2 ring-amber-300'
                 : 'bg-black/60 text-amber-300 hover:bg-black/80'
@@ -110,13 +168,35 @@ export default function ReelsPage() {
 
           <button 
             onClick={() => setActiveCategory('a4')}
-            className={`px-3 py-1 rounded-full text-[11px] font-extrabold backdrop-blur-md transition-all flex items-center gap-1 cursor-pointer ${
+            className={`px-3 py-1 rounded-full text-[11px] font-extrabold backdrop-blur-md transition-all flex items-center gap-1 cursor-pointer shrink-0 ${
               activeCategory === 'a4'
                 ? 'bg-red-500 text-white shadow-lg scale-105'
                 : 'bg-black/60 text-red-300 hover:bg-black/80'
             }`}
           >
             <span>⚡ Влад А4</span>
+          </button>
+
+          <button 
+            onClick={() => setActiveCategory('cars')}
+            className={`px-3 py-1 rounded-full text-[11px] font-extrabold backdrop-blur-md transition-all flex items-center gap-1 cursor-pointer shrink-0 ${
+              activeCategory === 'cars'
+                ? 'bg-blue-500 text-white shadow-lg scale-105'
+                : 'bg-black/60 text-blue-300 hover:bg-black/80'
+            }`}
+          >
+            <span>🏎️ Машины & Дрифт</span>
+          </button>
+
+          <button 
+            onClick={() => setActiveCategory('nature')}
+            className={`px-3 py-1 rounded-full text-[11px] font-extrabold backdrop-blur-md transition-all flex items-center gap-1 cursor-pointer shrink-0 ${
+              activeCategory === 'nature'
+                ? 'bg-teal-500 text-white shadow-lg scale-105'
+                : 'bg-black/60 text-teal-300 hover:bg-black/80'
+            }`}
+          >
+            <span>🏔️ Природа & Океан</span>
           </button>
         </div>
       </div>
@@ -134,7 +214,7 @@ export default function ReelsPage() {
         </div>
       ) : (
         <div className="reels-container w-full h-full overflow-y-scroll no-scrollbar snap-y snap-mandatory bg-black md:rounded-3xl shadow-2xl relative">
-          {filteredReels.map((reel) => (
+          {filteredReels.map((reel, index) => (
             <ReelCard 
               key={reel.id} 
               reel={reel} 
@@ -171,15 +251,33 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted, isActive }) {
   }, [creator]);
 
   useEffect(() => {
-    setIsLiked(reel.likes.includes(currentUser.uid));
-    setIsSaved(reel.saves?.includes(currentUser.uid) || false);
+    setIsLiked(reel.likes?.includes(currentUser?.uid) || false);
+    setIsSaved(reel.saves?.includes(currentUser?.uid) || false);
   }, [reel, currentUser]);
 
   useEffect(() => {
     if (videoRef.current) {
       videoRef.current.muted = isMuted;
+      videoRef.current.volume = 1.0;
     }
-  }, [isMuted]);
+    if (isActive && !isMuted) {
+      soundEngine.init();
+      let genre = 'general';
+      const text = `${reel.caption || ''} ${reel.audioTitle || ''} ${(reel.hashtags || []).join(' ')}`.toLowerCase();
+      if (text.includes('футбол') || text.includes('messi') || text.includes('ronaldo') || text.includes('foot') || reel.userId === 'reels_star') genre = 'football';
+      else if (text.includes('маша') || text.includes('мульт') || reel.userId === 'masha_medved' || reel.userId === 'cartoon_master') genre = 'cartoons';
+      else if (text.includes('a4') || text.includes('влад') || reel.userId === 'vlad_a4') genre = 'a4';
+      else if (text.includes('car') || text.includes('drift') || text.includes('bugatti') || text.includes('subaru')) genre = 'cars';
+
+      soundEngine.playTrack(genre);
+    } else {
+      soundEngine.stop();
+    }
+
+    return () => {
+      soundEngine.stop();
+    };
+  }, [isMuted, isActive, reel]);
 
   // Subscribe to comments
   useEffect(() => {
@@ -190,39 +288,37 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted, isActive }) {
 
   // Subscribe to conversations for sharing
   useEffect(() => {
-    if (!showShareModal) return;
+    if (!showShareModal || !currentUser?.uid) return;
     const unsubscribe = dbService.subscribeToConversations(currentUser.uid, setConversations);
     return unsubscribe;
-  }, [showShareModal, currentUser.uid]);
+  }, [showShareModal, currentUser?.uid]);
 
   // Intersection Observer for autoplay & views increment
   useEffect(() => {
+    const el = videoRef.current;
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
-          if (!videoError) {
-            videoRef.current?.play().catch(() => {});
+          if (!videoError && el) {
+            el.play().catch(() => {});
           }
           // Increment views
           dbService.incrementReelViews(reel.id);
         } else {
-          if (!videoError && videoRef.current) {
-            videoRef.current.pause();
-            videoRef.current.currentTime = 0;
+          if (!videoError && el) {
+            el.pause();
           }
         }
       });
     }, { threshold: 0.6 });
 
-    if (videoRef.current) {
-      observer.observe(videoRef.current);
+    if (el) {
+      observer.observe(el);
     }
 
     return () => {
-      if (videoRef.current) {
-        videoRef.current.play()
-          .then(() => setIsPlaying(true))
-          .catch(() => setIsPlaying(false));
+      if (el) {
+        observer.unobserve(el);
       }
     };
   }, [reel.id, videoError]);
@@ -232,13 +328,17 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted, isActive }) {
   const tapTimeoutRef = useRef(null);
 
   const handleTap = () => {
+    soundEngine.init();
+    if (isMuted) {
+      setIsMuted(false);
+    }
     const now = Date.now();
     if (now - lastTapRef.current < 300) {
       if (tapTimeoutRef.current) {
         clearTimeout(tapTimeoutRef.current);
         tapTimeoutRef.current = null;
       }
-      if (!isLiked) {
+      if (!isLiked && currentUser?.uid) {
         dbService.likeReel(reel.id, currentUser.uid);
       }
       setShowHeartPop(true);
@@ -266,28 +366,32 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted, isActive }) {
   }, []);
 
   const handleLike = () => {
+    if (!currentUser?.uid) return;
     dbService.likeReel(reel.id, currentUser.uid);
   };
 
   const handleSave = () => {
+    if (!currentUser?.uid) return;
     dbService.savePost(reel.id, currentUser.uid);
     setIsSaved(!isSaved);
   };
 
   const handleAddComment = (e) => {
     e.preventDefault();
-    if (!newComment.trim()) return;
+    if (!newComment.trim() || !currentUser?.uid) return;
     dbService.addComment(reel.id, currentUser.uid, newComment.trim());
     setNewComment('');
   };
 
   const handleRepost = () => {
+    if (!currentUser?.uid) return;
     if (window.confirm("Опубликовать этот Reel в вашу ленту?")) {
       dbService.repostPost(reel.id, currentUser.uid);
     }
   };
 
   const handleShareReel = async (convId) => {
+    if (!currentUser?.uid) return;
     try {
       await dbService.sendMessage(convId, currentUser.uid, "Отправил Reels 🎬", null, null, reel.id);
       alert("Reels успешно отправлен другу в чат!");
@@ -313,33 +417,28 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted, isActive }) {
   return (
     <div 
       className="reel-card w-full h-full snap-start relative flex flex-col justify-end select-none animate-fade-in"
-      onClick={handleDoubleTap}
+      onClick={handleTap}
     >
       {/* Video element or YouTube iframe or Motion Animated Video Fallback */}
       {ytId ? (
-        <iframe 
-          src={`https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&playlist=${ytId}&controls=1&modestbranding=1&rel=0`}
-          className="absolute inset-0 w-full h-full border-0 z-0"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-          allowFullScreen
-          title="YouTube Video"
-        />
+        <div className="absolute inset-0 w-full h-full z-0 pointer-events-none overflow-hidden">
+          <iframe 
+            src={`https://www.youtube-nocookie.com/embed/${ytId}?autoplay=1&mute=${isMuted ? 1 : 0}&loop=1&playlist=${ytId}&controls=0&modestbranding=1&rel=0&enablejsapi=1`}
+            className="w-full h-full border-0 scale-125"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            allowFullScreen
+            title="YouTube Video"
+          />
+        </div>
       ) : videoError ? (
         <div className="absolute inset-0 w-full h-full overflow-hidden bg-black z-0">
           <motion.img 
-            animate={{ scale: [1, 1.15, 1], x: [0, -10, 0], y: [0, -15, 0] }}
-            transition={{ duration: 12, repeat: Infinity, ease: 'easeInOut' }}
-            src={reel.coverURL || 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&auto=format&fit=crop&q=80'} 
-            alt="Animated Reel" 
-            className="w-full h-full object-cover"
+            animate={{ scale: [1, 1.1, 1] }}
+            transition={{ duration: 10, repeat: Infinity, ease: 'easeInOut' }}
+            src={reel.coverURL || 'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&auto=format&fit=crop&q=80'} 
+            alt="Football Reel Cover" 
+            className="w-full h-full object-cover opacity-90"
           />
-          {/* Animated Audio Equalizer Visualizer Overlay */}
-          <div className="absolute top-16 right-6 flex items-end gap-1 bg-black/40 px-3 py-1.5 rounded-full backdrop-blur-md">
-            <span className="w-1 h-4 bg-brand rounded-full animate-pulse" />
-            <span className="w-1 h-6 bg-purple-400 rounded-full animate-bounce" />
-            <span className="w-1 h-3 bg-pink-400 rounded-full animate-pulse" />
-            <span className="text-[10px] font-bold text-white ml-1">Анимированный Видео-Reel</span>
-          </div>
         </div>
       ) : (
         <video 
@@ -353,6 +452,20 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted, isActive }) {
           onError={() => setVideoError(true)}
           className="absolute inset-0 w-full h-full object-cover z-0"
         />
+      )}
+
+      {/* Prominent Floating Unmute Banner if Muted */}
+      {isMuted && (
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsMuted(false);
+          }}
+          className="absolute top-28 left-1/2 -translate-x-1/2 z-30 px-4 py-2 bg-gradient-to-r from-purple-600 to-brand hover:scale-105 text-white rounded-full text-xs font-extrabold shadow-2xl backdrop-blur-md border border-white/20 flex items-center gap-2 animate-bounce cursor-pointer"
+        >
+          <VolumeX size={18} />
+          <span>🔊 Нажмите, чтобы включить звук</span>
+        </button>
       )}
 
       {/* Red YouTube Button Link Overlay for A4 or YouTube clips */}
@@ -385,19 +498,8 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted, isActive }) {
       <div className="absolute inset-x-0 bottom-0 h-64 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none z-10" />
       <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/60 to-transparent pointer-events-none z-10" />
 
-      {/* Floating Mute Indicator */}
-      <button 
-        onClick={(e) => {
-          e.stopPropagation();
-          setIsMuted(!isMuted);
-        }}
-        className="absolute top-6 left-6 z-20 p-2.5 rounded-full bg-black/40 hover:bg-black/60 text-white transition-colors"
-      >
-        {isMuted ? <VolumeX size={18} /> : <Volume2 size={18} />}
-      </button>
-
       {/* Left Bottom Information Overlay */}
-      <div className="absolute bottom-6 left-6 right-16 z-20 text-white flex flex-col gap-3 pointer-events-auto">
+      <div className="absolute bottom-6 left-6 right-16 z-20 text-white flex flex-col gap-2.5 pointer-events-auto">
         <div className="flex items-center gap-3">
           <Link to={`/profile/${author?.uid}`} onClick={(e) => e.stopPropagation()}>
             <img 
@@ -417,6 +519,32 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted, isActive }) {
         <p className="text-xs text-white/90 leading-relaxed font-medium">
           {reel.caption}
         </p>
+
+        {/* Music Track Badge */}
+        <button 
+          onClick={(e) => {
+            e.stopPropagation();
+            soundEngine.init();
+            setIsMuted(!isMuted);
+          }}
+          className={`flex items-center gap-2 text-[11px] font-bold px-3 py-1.5 rounded-full border backdrop-blur-md w-fit max-w-[280px] transition-all cursor-pointer ${
+            !isMuted 
+              ? 'bg-emerald-500/30 text-emerald-300 border-emerald-500/40 ring-1 ring-emerald-400/50' 
+              : 'bg-black/50 text-white/90 border-white/10 hover:bg-black/70'
+          }`}
+        >
+          <Music size={13} className={`${!isMuted ? 'text-emerald-400 animate-spin' : 'text-purple-400'} shrink-0`} />
+          <span className="truncate">{reel.audioTitle || '🎵 Футбол & Музыка — Оригинальный трек ⚽'}</span>
+          {!isMuted ? (
+            <span className="flex items-end gap-0.5 h-3 ml-1 shrink-0">
+              <span className="w-0.5 h-full bg-emerald-400 animate-pulse" />
+              <span className="w-0.5 h-2 bg-emerald-400 animate-bounce" />
+              <span className="w-0.5 h-3 bg-emerald-400 animate-pulse" />
+            </span>
+          ) : (
+            <span className="text-[10px] text-red-400 font-extrabold ml-1 shrink-0">🔇 Звук ВЫКЛ</span>
+          )}
+        </button>
 
         <div className="flex items-center gap-1.5 text-[10px] text-white/60 bg-white/10 px-2.5 py-1 rounded-full w-fit">
           <Eye size={12} />

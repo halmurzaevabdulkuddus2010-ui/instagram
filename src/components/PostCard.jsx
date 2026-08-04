@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { dbService } from '../services/dbService';
+import { soundEngine } from '../utils/soundEngine';
 import { 
   Heart, 
   MessageCircle, 
@@ -305,11 +306,22 @@ export default function PostCard({ post, authors = [], currentUserId }) {
               <button 
                 onClick={(e) => {
                   e.stopPropagation();
+                  soundEngine.init();
+                  if (isMuted) {
+                    let genre = 'general';
+                    const text = `${post.caption || ''}`.toLowerCase();
+                    if (text.includes('футбол') || text.includes('messi') || text.includes('ronaldo')) genre = 'football';
+                    else if (text.includes('a4')) genre = 'a4';
+                    soundEngine.playTrack(genre);
+                  } else {
+                    soundEngine.stop();
+                  }
                   setIsMuted(!isMuted);
                 }}
-                className="absolute bottom-4 right-4 p-2 rounded-full bg-black/60 hover:bg-black/80 text-white z-10 transition-colors"
+                className="absolute bottom-4 right-4 px-3 py-1.5 rounded-full bg-black/70 hover:bg-black/90 text-white backdrop-blur-md text-xs font-bold flex items-center gap-1.5 z-10 transition-all cursor-pointer border border-white/10"
               >
-                {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
+                {isMuted ? <VolumeX size={16} className="text-red-400" /> : <Volume2 size={16} className="text-emerald-400 animate-pulse" />}
+                <span>{isMuted ? "Включить звук" : "🔊 Звук включен"}</span>
               </button>
             )}
           </div>

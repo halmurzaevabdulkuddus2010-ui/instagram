@@ -17,9 +17,9 @@ const PRESET_PHOTOS = [
 ];
 
 const PRESET_VIDEOS = [
-  { label: '🌊 Волны океана', url: 'https://assets.mixkit.co/videos/preview/mixkit-waves-in-the-water-1164-large.mp4' },
-  { label: '🏙️ Ночной мегаполис', url: 'https://assets.mixkit.co/videos/preview/mixkit-aerial-view-of-city-traffic-at-night-11-large.mp4' },
-  { label: '🚗 Поездка на авто', url: 'https://assets.mixkit.co/videos/preview/mixkit-driving-down-a-road-with-trees-on-the-sides-4290-large.mp4' },
+  { label: '⚽ Футбол 4K (со звуком)', url: 'https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4' },
+  { label: '🔥 Шоу & Голы (со звуком)', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' },
+  { label: '🏎️ Гонки и авто (со звуком)', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4' },
 ];
 
 const QUICK_HASHTAGS = ['#bloggerosh', '#osh', '#kyrgyzstan', '#vibe', '#nature', '#trending', '#reels', '#photooftheday'];
