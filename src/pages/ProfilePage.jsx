@@ -15,9 +15,15 @@ import {
   MessageSquare,
   ShieldCheck,
   Music,
-  Volume2
+  Volume2,
+  QrCode,
+  Share2,
+  BarChart2,
+  Plus,
+  X,
+  Check
 } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function ProfilePage() {
   const { id } = useParams();
@@ -31,6 +37,8 @@ export default function ProfilePage() {
   const [activeTab, setActiveTab] = useState('posts'); // 'posts' | 'reels' | 'saved'
   const [loading, setLoading] = useState(true);
   const [isPlayingMusic, setIsPlayingMusic] = useState(false);
+  const [showQRModal, setShowQRModal] = useState(false);
+  const [showStatsModal, setShowStatsModal] = useState(false);
 
   const avatarInputRef = useRef(null);
   const coverInputRef = useRef(null);
@@ -198,12 +206,23 @@ export default function ProfilePage() {
           {/* Action Buttons (Follow / Chat / Edit) */}
           <div className="flex justify-center gap-3">
             {isOwnProfile ? (
-              <Link 
-                to="/settings" 
-                className="px-5 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700/80 rounded-xl text-xs font-bold transition-all"
-              >
-                Редактировать профиль
-              </Link>
+              <div className="flex items-center gap-2">
+                <Link 
+                  to="/settings" 
+                  className="px-5 py-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700/80 rounded-xl text-xs font-bold transition-all"
+                >
+                  Редактировать профиль
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setShowQRModal(true)}
+                  className="p-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 rounded-xl transition-all cursor-pointer flex items-center gap-1.5 text-xs font-bold"
+                  title="Поделиться профилем (QR-код)"
+                >
+                  <QrCode size={16} />
+                  <span className="hidden sm:inline">QR-код</span>
+                </button>
+              </div>
             ) : (
               <>
                 {isBlockedByMe ? (
@@ -346,6 +365,68 @@ export default function ProfilePage() {
         </div>
       </div>
 
+      {/* Professional Dashboard Banner (for own profile) */}
+      {isOwnProfile && (
+        <div 
+          onClick={() => setShowStatsModal(true)}
+          className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-slate-900 via-purple-950 to-slate-900 text-white border border-purple-500/30 flex items-center justify-between cursor-pointer hover:border-purple-400 transition-all shadow-lg"
+        >
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-xl bg-purple-500/20 text-purple-400 border border-purple-500/30">
+              <BarChart2 size={20} />
+            </div>
+            <div>
+              <h4 className="text-xs font-extrabold flex items-center gap-1.5 text-purple-300">
+                <span>Профессиональная панель управления</span>
+                <span className="px-1.5 py-0.5 rounded bg-purple-500/30 text-[9px]">Бизнес</span>
+              </h4>
+              <p className="text-[11px] text-slate-300 font-medium">34.2K аккаунтов охвачено за последние 30 дней (+18%)</p>
+            </div>
+          </div>
+          <span className="text-xs font-bold text-purple-400 hover:underline shrink-0">Смотреть 📊</span>
+        </div>
+      )}
+
+      {/* Story Highlights (Актуальное 💖) Bar */}
+      <div className="mb-6 overflow-x-auto no-scrollbar">
+        <div className="flex items-center gap-4 px-2">
+          {/* Create Highlight Circle */}
+          {isOwnProfile && (
+            <div 
+              onClick={() => alert("Добавление новой подборки в Актуальное!")}
+              className="flex flex-col items-center gap-1.5 cursor-pointer shrink-0 group"
+            >
+              <div className="w-16 h-16 rounded-full border-2 border-dashed border-slate-400 dark:border-slate-600 flex items-center justify-center text-slate-400 group-hover:border-brand group-hover:text-brand transition-all">
+                <Plus size={24} />
+              </div>
+              <span className="text-[10px] font-extrabold text-slate-500">Добавить</span>
+            </div>
+          )}
+
+          {[
+            { id: 1, title: 'Сулайман-Тоо', emoji: '🏔️', img: 'https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=300' },
+            { id: 2, title: 'Поездки', emoji: '✈️', img: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=300' },
+            { id: 3, title: 'Еда Оша', emoji: '🍕', img: 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?w=300' },
+            { id: 4, title: 'Reels', emoji: '🎬', img: 'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=300' },
+            { id: 5, title: 'Vibe', emoji: '🔥', img: 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=300' }
+          ].map(h => (
+            <div 
+              key={h.id}
+              onClick={() => alert(`Просмотр Актуального: ${h.title}`)}
+              className="flex flex-col items-center gap-1.5 cursor-pointer shrink-0 group"
+            >
+              <div className="w-16 h-16 rounded-full p-[2px] bg-gradient-to-tr from-yellow-400 via-brand to-purple-600 group-hover:scale-105 transition-transform shadow-md">
+                <div className="w-full h-full rounded-full bg-slate-900 p-0.5 overflow-hidden relative">
+                  <img src={h.img} alt={h.title} className="w-full h-full object-cover rounded-full" />
+                  <span className="absolute inset-0 flex items-center justify-center text-sm drop-shadow-md">{h.emoji}</span>
+                </div>
+              </div>
+              <span className="text-[10px] font-extrabold truncate max-w-[68px] text-theme-lightText dark:text-theme-darkText">{h.title}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* Private Profile Screen */}
       {!showContent ? (
         <div className="flex flex-col items-center justify-center p-16 text-center bg-theme-lightCard dark:bg-theme-darkCard border border-theme-lightBorder dark:border-theme-darkBorder rounded-3xl transition-colors">
@@ -476,6 +557,113 @@ export default function ProfilePage() {
 
           </div>
         </>
+      )}
+
+      {/* QR Code Profile Modal */}
+      {showQRModal && (
+        <AnimatePresence>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-md" onClick={() => setShowQRModal(false)} />
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative w-full max-w-sm bg-gradient-to-tr from-yellow-400 via-brand to-purple-600 p-8 rounded-3xl text-white shadow-2xl z-10 flex flex-col items-center gap-6"
+            >
+              <button 
+                onClick={() => setShowQRModal(false)}
+                className="absolute top-4 right-4 p-2 rounded-full bg-black/40 hover:bg-black/70 text-white transition-all cursor-pointer"
+              >
+                <X size={18} />
+              </button>
+
+              <div className="text-center">
+                <h3 className="font-black text-xl tracking-wider uppercase">INSTAGRAM QR</h3>
+                <p className="text-xs opacity-90 font-bold">@{profileUser.username}</p>
+              </div>
+
+              {/* QR Canvas Simulation */}
+              <div className="w-56 h-56 bg-white p-4 rounded-3xl shadow-2xl flex flex-col items-center justify-center relative">
+                <div className="grid grid-cols-5 gap-2 w-full h-full p-2">
+                  {Array.from({ length: 25 }).map((_, i) => (
+                    <div 
+                      key={i} 
+                      className={`rounded-md ${
+                        i % 2 === 0 || i % 3 === 0 ? 'bg-slate-950' : 'bg-brand/20'
+                      }`} 
+                    />
+                  ))}
+                </div>
+                <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                  <div className="p-3 rounded-2xl bg-white shadow-xl border-2 border-brand">
+                    <img src={profileUser.photoURL} alt="Avatar" className="w-10 h-10 rounded-full object-cover" />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3 w-full">
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(window.location.href);
+                    alert("Ссылка на профиль скопирована в буфер обмена!");
+                  }}
+                  className="flex-1 py-3 bg-black/60 hover:bg-black/80 rounded-2xl text-xs font-extrabold flex items-center justify-center gap-2 transition-all cursor-pointer border border-white/20"
+                >
+                  <Share2 size={16} />
+                  <span>Скопировать ссылку</span>
+                </button>
+              </div>
+            </motion.div>
+          </div>
+        </AnimatePresence>
+      )}
+
+      {/* Professional Stats Modal */}
+      {showStatsModal && (
+        <AnimatePresence>
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+            <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={() => setShowStatsModal(false)} />
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="relative w-full max-w-lg bg-theme-lightCard dark:bg-theme-darkCard text-theme-lightText dark:text-theme-darkText p-6 rounded-3xl shadow-2xl z-10 flex flex-col gap-5 border border-theme-lightBorder dark:border-theme-darkBorder"
+            >
+              <div className="flex items-center justify-between border-b border-theme-lightBorder dark:border-theme-darkBorder pb-3">
+                <h3 className="font-extrabold text-sm flex items-center gap-2">
+                  <BarChart2 size={18} className="text-purple-500" />
+                  <span>Профессиональная аналитика аккаунта</span>
+                </h3>
+                <button onClick={() => setShowStatsModal(false)} className="p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer">
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div className="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/20 text-center">
+                  <span className="block text-2xl font-black text-purple-600 dark:text-purple-400">34,290</span>
+                  <span className="text-[10px] uppercase font-bold text-slate-400">Охвачено аккаунтов</span>
+                </div>
+                <div className="p-4 rounded-2xl bg-pink-500/10 border border-pink-500/20 text-center">
+                  <span className="block text-2xl font-black text-pink-600 dark:text-pink-400">8,410</span>
+                  <span className="text-[10px] uppercase font-bold text-slate-400">Взаимодействия с контентом</span>
+                </div>
+                <div className="p-4 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-center">
+                  <span className="block text-2xl font-black text-emerald-600 dark:text-emerald-400">+1,240</span>
+                  <span className="text-[10px] uppercase font-bold text-slate-400">Новых подписчиков</span>
+                </div>
+                <div className="p-4 rounded-2xl bg-blue-500/10 border border-blue-500/20 text-center">
+                  <span className="block text-2xl font-black text-blue-600 dark:text-blue-400">94.8%</span>
+                  <span className="text-[10px] uppercase font-bold text-slate-400">Вовлеченность (ER)</span>
+                </div>
+              </div>
+
+              <div className="p-4 rounded-2xl bg-slate-100 dark:bg-slate-800 text-xs font-medium leading-relaxed">
+                📈 <span className="font-bold">Совет ИИ-Аналитика:</span> Ваши ролики Reels о горах Оша и спортивных автомобилях имеют наибольший охват! Рекомендуем публиковать контент с 18:00 до 21:00.
+              </div>
+            </motion.div>
+          </div>
+        </AnimatePresence>
       )}
     </div>
   );

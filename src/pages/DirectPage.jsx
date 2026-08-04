@@ -1,8 +1,26 @@
-// DirectPage.jsx - Real-time Direct Messages with chat list and shared post cards
+// DirectPage.jsx - Real-time Direct Messages with chat list, shared posts, Notes & Calling
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { dbService } from '../services/dbService';
-import { Send, Plus, ChevronLeft, Search, MessageSquare, ImageIcon, Paperclip, Film, Clapperboard, X } from 'lucide-react';
+import { 
+  Send, 
+  Plus, 
+  ChevronLeft, 
+  Search, 
+  MessageSquare, 
+  ImageIcon, 
+  Paperclip, 
+  Film, 
+  Clapperboard, 
+  X,
+  Phone,
+  Video,
+  Mic,
+  MicOff,
+  VideoOff,
+  Radio,
+  Sparkles
+} from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -21,6 +39,12 @@ export default function DirectPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [mobileView, setMobileView] = useState('list'); // 'list' | 'chat'
   
+  // Instagram Notes & Calling State
+  const [userNote, setUserNote] = useState('Слушаю музыку 🎵');
+  const [showCallModal, setShowCallModal] = useState(null); // 'audio' | 'video' | null
+  const [isMicMuted, setIsMicMuted] = useState(false);
+  const [isVideoMuted, setIsVideoMuted] = useState(false);
+
   const chatBottomRef = useRef(null);
 
   // Subscribe to conversations, users, posts, and reels
@@ -78,13 +102,12 @@ export default function DirectPage() {
   // Filter users for starting new chat
   const filteredUsers = users.filter(user => {
     if (user.uid === currentUser.uid) return false;
-    if (user.isBanned) return false;
-    // Check if user is blocked
-    if (currentUser.blockedUsers?.includes(user.uid)) return false;
-    if (user.blockedUsers?.includes(currentUser.uid)) return false;
-    
-    const term = searchQuery.toLowerCase();
-    return user.username.includes(term) || user.displayName.toLowerCase().includes(term);
+    if (!searchQuery.trim()) return true;
+    const q = searchQuery.toLowerCase();
+    return (
+      user.displayName?.toLowerCase().includes(q) ||
+      user.username?.toLowerCase().includes(q)
+    );
   });
 
   return (
@@ -106,6 +129,45 @@ export default function DirectPage() {
           </button>
         </div>
 
+        {/* Instagram Notes (Заметки 💬) Row */}
+        <div className="p-3 border-b border-theme-lightBorder dark:border-theme-darkBorder overflow-x-auto no-scrollbar bg-slate-50/50 dark:bg-slate-900/20">
+          <div className="flex items-center gap-3">
+            {/* My Note bubble */}
+            <div 
+              onClick={() => {
+                const newNote = prompt("Введите вашу заметку в Директ (до 60 символов):", userNote);
+                if (newNote !== null) setUserNote(newNote.slice(0, 60));
+              }}
+              className="flex flex-col items-center gap-1 cursor-pointer shrink-0 group relative"
+            >
+              <div className="relative">
+                <img src={currentUser.photoURL} alt="Me" className="w-12 h-12 rounded-full object-cover ring-2 ring-brand/40" />
+                <div className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-white dark:bg-slate-800 text-[9px] font-extrabold rounded-full shadow border border-slate-200 dark:border-slate-700 whitespace-nowrap max-w-[75px] truncate">
+                  {userNote || '+ Заметка'}
+                </div>
+              </div>
+              <span className="text-[10px] font-bold text-slate-500">Ваша заметка</span>
+            </div>
+
+            {/* Friends Notes */}
+            {[
+              { id: '1', name: 'traveler_osh', note: 'В горах Оша 🏔️', img: 'https://api.dicebear.com/7.x/avataaars/svg?seed=traveler_osh' },
+              { id: '2', name: 'vlad_a4', note: 'Челлендж 24ч 🔥', img: 'https://api.dicebear.com/7.x/avataaars/svg?seed=vladA4' },
+              { id: '3', name: 'masha', note: 'Печем варенье 🍓', img: 'https://api.dicebear.com/7.x/bottts/svg?seed=masha_medved' }
+            ].map(n => (
+              <div key={n.id} className="flex flex-col items-center gap-1 cursor-pointer shrink-0 relative">
+                <div className="relative">
+                  <img src={n.img} alt={n.name} className="w-12 h-12 rounded-full object-cover ring-2 ring-slate-200 dark:ring-slate-700" />
+                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 px-2 py-0.5 bg-white dark:bg-slate-800 text-[9px] font-extrabold rounded-full shadow border border-slate-200 dark:border-slate-700 whitespace-nowrap max-w-[75px] truncate">
+                    {n.note}
+                  </div>
+                </div>
+                <span className="text-[10px] font-bold truncate max-w-[55px]">{n.name}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* List of active chats */}
         <div className="flex-1 overflow-y-auto">
           {conversations.length === 0 ? (
@@ -120,8 +182,6 @@ export default function DirectPage() {
               const recipient = users.find(u => u.uid === recipientUid);
               
               if (!recipient || recipient.isBanned) return null;
-              
-              // Check if they are blocked
               if (currentUser.blockedUsers?.includes(recipientUid)) return null;
 
               const isSelected = conv.id === activeConvId;
@@ -146,7 +206,6 @@ export default function DirectPage() {
                       alt={recipient.displayName} 
                       className="w-11 h-11 rounded-full object-cover ring-1 ring-slate-200 dark:ring-slate-700"
                     />
-                    {/* Simulated online indicator */}
                     <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full bg-green-500 border-2 border-theme-lightCard dark:border-theme-darkCard" />
                   </div>
 
@@ -203,6 +262,24 @@ export default function DirectPage() {
                   </Link>
                 )}
               </div>
+
+              {/* Calling Action Buttons */}
+              <div className="flex items-center gap-2">
+                <button 
+                  onClick={() => setShowCallModal('audio')}
+                  className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
+                  title="Аудиозвонок"
+                >
+                  <Phone size={18} />
+                </button>
+                <button 
+                  onClick={() => setShowCallModal('video')}
+                  className="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 transition-colors cursor-pointer"
+                  title="Видеозвонок"
+                >
+                  <Video size={18} />
+                </button>
+              </div>
             </div>
 
             {/* Scrollable Message Box */}
@@ -210,7 +287,6 @@ export default function DirectPage() {
               {messages.map((msg) => {
                 const isSelf = msg.senderId === currentUser.uid;
                 
-                // If message contains a shared post or reel
                 const sharedPost = msg.sharedPostId ? posts.find(p => p.id === msg.sharedPostId) : null;
                 const sharedPostAuthor = sharedPost ? users.find(u => u.uid === sharedPost.userId) : null;
 
@@ -220,91 +296,65 @@ export default function DirectPage() {
                 return (
                   <div 
                     key={msg.id}
-                    className={`flex flex-col max-w-[70%] ${
-                      isSelf ? 'self-end items-end' : 'self-start items-start'
-                    }`}
+                    className={`flex flex-col ${isSelf ? 'items-end' : 'items-start'}`}
                   >
-                    {/* Normal message text */}
-                    {!sharedPost && !sharedReel && (
-                      <div className={`p-3.5 rounded-2xl text-xs font-medium ${
+                    <div 
+                      className={`max-w-[75%] p-3.5 rounded-2xl text-xs shadow-sm ${
                         isSelf 
-                          ? 'bg-brand text-white rounded-br-none shadow-md shadow-brand/10' 
+                          ? 'bg-gradient-to-r from-purple-600 to-brand text-white rounded-br-none' 
                           : 'bg-theme-lightCard dark:bg-theme-darkCard text-theme-lightText dark:text-theme-darkText border border-theme-lightBorder dark:border-theme-darkBorder rounded-bl-none'
-                      }`}>
-                        <p className="break-words leading-relaxed">{msg.text}</p>
-                      </div>
-                    )}
+                      }`}
+                    >
+                      {/* Text */}
+                      {msg.text && <p className="leading-relaxed whitespace-pre-line">{msg.text}</p>}
 
-                    {/* Shared post card layout */}
-                    {sharedPost && (
-                      <div className={`border border-theme-lightBorder dark:border-theme-darkBorder rounded-2xl overflow-hidden bg-theme-lightCard dark:bg-theme-darkCard w-56 flex flex-col shadow-md ${
-                        isSelf ? 'rounded-br-none' : 'rounded-bl-none'
-                      }`}>
-                        <div className="p-2 border-b border-slate-50 dark:border-slate-800/40 flex items-center gap-2">
-                          <img 
-                            src={sharedPostAuthor?.photoURL || 'https://api.dicebear.com/7.x/avataaars/svg'} 
-                            alt={sharedPostAuthor?.displayName} 
-                            className="w-6 h-6 rounded-full object-cover"
-                          />
-                          <span className="text-[10px] font-bold truncate">@{sharedPostAuthor?.username}</span>
-                        </div>
-                        <div className="w-full aspect-square bg-slate-900 overflow-hidden relative">
-                          {sharedPost.type === 'photo' ? (
-                            <img src={sharedPost.mediaURL} alt="Shared" className="w-full h-full object-cover" />
-                          ) : (
-                            <video src={`${sharedPost.mediaURL}#t=0.1`} preload="metadata" muted playsInline className="w-full h-full object-cover" />
-                          )}
-                        </div>
-                        <div className="p-2.5">
-                          <p className="text-[10px] text-theme-lightMuted dark:text-theme-darkMuted line-clamp-2 leading-normal">
-                            {sharedPost.caption}
-                          </p>
-                          <Link 
-                            to="/" 
-                            className="text-[9px] font-bold text-brand hover:underline mt-1.5 block"
-                          >
-                            Посмотреть публикацию
-                          </Link>
-                        </div>
-                      </div>
-                    )}
-
-                    {/* Shared Reel card layout */}
-                    {sharedReel && (
-                      <div className={`border border-theme-lightBorder dark:border-theme-darkBorder rounded-2xl overflow-hidden bg-theme-lightCard dark:bg-theme-darkCard w-56 flex flex-col shadow-md ${
-                        isSelf ? 'rounded-br-none' : 'rounded-bl-none'
-                      }`}>
-                        <div className="p-2 border-b border-slate-50 dark:border-slate-800/40 flex items-center justify-between">
+                      {/* Shared Post Card */}
+                      {sharedPost && (
+                        <div className="mt-2 rounded-xl overflow-hidden border border-white/20 bg-black/20 p-2 flex flex-col gap-1.5">
                           <div className="flex items-center gap-2">
                             <img 
-                              src={sharedReelAuthor?.photoURL || 'https://api.dicebear.com/7.x/avataaars/svg'} 
-                              alt={sharedReelAuthor?.displayName} 
-                              className="w-6 h-6 rounded-full object-cover"
+                              src={sharedPostAuthor?.photoURL} 
+                              alt="author" 
+                              className="w-5 h-5 rounded-full object-cover" 
                             />
-                            <span className="text-[10px] font-bold truncate">@{sharedReelAuthor?.username}</span>
+                            <span className="text-[10px] font-extrabold text-white">
+                              @{sharedPostAuthor?.username || 'user'}
+                            </span>
                           </div>
-                          <span className="text-[9px] font-extrabold text-brand bg-brand/10 px-2 py-0.5 rounded">Reels 🎬</span>
+                          {sharedPost.type === 'photo' ? (
+                            <img 
+                              src={sharedPost.mediaURL} 
+                              alt="Shared" 
+                              className="w-full max-h-48 object-cover rounded-lg" 
+                            />
+                          ) : (
+                            <video 
+                              src={sharedPost.mediaURL} 
+                              controls 
+                              className="w-full max-h-48 object-cover rounded-lg" 
+                            />
+                          )}
+                          <p className="text-[10px] text-white/90 line-clamp-1 italic">{sharedPost.caption}</p>
                         </div>
-                        <div className="w-full aspect-[9/14] bg-slate-950 overflow-hidden relative group">
-                          <img src={sharedReel.coverURL || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800'} alt="Reel Cover" className="w-full h-full object-cover" />
-                          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
-                            <Link to="/reels" className="p-3 rounded-full bg-brand text-white shadow-lg hover:scale-110 transition-transform flex items-center justify-center font-bold text-xs">
-                              ▶ Смотреть
-                            </Link>
-                          </div>
-                        </div>
-                        <div className="p-2.5">
-                          <p className="text-[10px] text-theme-lightMuted dark:text-theme-darkMuted line-clamp-2 leading-normal font-medium">
-                            {sharedReel.caption}
-                          </p>
-                          <Link to="/reels" className="text-[9px] font-bold text-brand hover:underline mt-1.5 block">
-                            Смотреть Reels в плеере ▶
-                          </Link>
-                        </div>
-                      </div>
-                    )}
+                      )}
 
-                    <span className="text-[8px] text-slate-400 mt-1">
+                      {/* Shared Reel Card */}
+                      {sharedReel && (
+                        <div className="mt-2 rounded-xl overflow-hidden border border-purple-400/30 bg-black/40 p-2 flex flex-col gap-1.5">
+                          <div className="flex items-center gap-2">
+                            <Clapperboard size={14} className="text-pink-400" />
+                            <span className="text-[10px] font-extrabold text-pink-300">Reels</span>
+                          </div>
+                          <video 
+                            src={sharedReel.mediaURL} 
+                            controls 
+                            className="w-full max-h-48 object-cover rounded-lg" 
+                          />
+                          <p className="text-[10px] text-white/90 line-clamp-1 italic">{sharedReel.caption}</p>
+                        </div>
+                      )}
+                    </div>
+                    <span className="text-[9px] text-slate-400 mt-1 px-1">
                       {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
@@ -313,159 +363,153 @@ export default function DirectPage() {
               <div ref={chatBottomRef} />
             </div>
 
-            {/* Video / Reels Picker Drawer */}
-            <AnimatePresence>
-              {showVideoPicker && (
-                <motion.div 
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 10 }}
-                  className="p-4 border-t border-theme-lightBorder dark:border-theme-darkBorder bg-slate-50 dark:bg-slate-900/60 transition-colors"
-                >
-                  <div className="flex justify-between items-center mb-3">
-                    <span className="text-xs font-bold flex items-center gap-1.5 text-brand">
-                      <Clapperboard size={16} />
-                      <span>Выберите Reels для отправки другу</span>
-                    </span>
-                    <button onClick={() => setShowVideoPicker(false)} className="text-slate-400 hover:text-slate-600 cursor-pointer">
-                      <X size={16} />
-                    </button>
-                  </div>
-                  <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
-                    {reels.map((r) => {
-                      const rAuthor = users.find(u => u.uid === r.userId);
-                      return (
-                        <div 
-                          key={r.id}
-                          onClick={async () => {
-                            await dbService.sendMessage(activeConvId, currentUser.uid, "Посмотри это Reels! 🎬", null, null, r.id);
-                            setShowVideoPicker(false);
-                          }}
-                          className="w-28 shrink-0 aspect-[9/14] rounded-xl overflow-hidden relative border border-theme-lightBorder dark:border-theme-darkBorder cursor-pointer hover:scale-105 transition-transform group bg-slate-950 shadow-md"
-                        >
-                          <img src={r.coverURL || 'https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=400'} alt="Reel" className="w-full h-full object-cover" />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent p-2 flex flex-col justify-between">
-                            <span className="text-[9px] font-bold text-white truncate">@{rAuthor?.username}</span>
-                            <span className="text-[9px] font-extrabold text-white bg-brand px-1.5 py-0.5 rounded text-center shadow-sm">
-                              Отправить ▶
-                            </span>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Message Input Box Form */}
-            <form onSubmit={handleSendMessage} className="p-4 border-t border-theme-lightBorder dark:border-theme-darkBorder bg-theme-lightCard dark:bg-theme-darkCard flex gap-2.5 transition-colors duration-200">
-              <button 
-                type="button"
-                onClick={() => setShowVideoPicker(!showVideoPicker)}
-                className="p-2.5 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl transition-all cursor-pointer flex items-center justify-center shrink-0"
-                title="Отправить Reels / видео"
-              >
-                <Clapperboard size={18} className="text-brand" />
-              </button>
-
+            {/* Input Bar */}
+            <form onSubmit={handleSendMessage} className="p-3 border-t border-theme-lightBorder dark:border-theme-darkBorder bg-theme-lightCard dark:bg-theme-darkCard flex items-center gap-2">
               <input 
                 type="text"
                 placeholder="Напишите сообщение..."
                 value={text}
                 onChange={(e) => setText(e.target.value)}
-                className="flex-1 bg-slate-100 dark:bg-slate-800 border border-theme-lightBorder dark:border-theme-darkBorder rounded-xl px-4 py-2.5 text-xs focus:outline-none focus:border-brand"
+                className="flex-1 bg-slate-100 dark:bg-slate-800 border border-theme-lightBorder dark:border-theme-darkBorder rounded-full px-4 py-2.5 text-xs focus:outline-none focus:border-brand"
               />
-
               <button 
                 type="submit"
                 disabled={!text.trim()}
-                className="p-2.5 bg-brand hover:bg-brand-dark text-white rounded-xl disabled:opacity-50 transition-colors shadow-md shadow-brand/15 cursor-pointer shrink-0"
+                className="p-2.5 bg-gradient-to-r from-purple-600 to-brand text-white rounded-full disabled:opacity-40 hover:scale-105 transition-all shadow-md cursor-pointer"
               >
-                <Send size={18} />
+                <Send size={16} />
               </button>
             </form>
           </>
         ) : (
-          <div className="flex-1 flex flex-col items-center justify-center text-center p-8 text-theme-lightMuted dark:text-theme-darkMuted">
-            <MessageSquare size={48} className="mb-4 text-brand opacity-30 animate-pulse-subtle" />
-            <h3 className="text-base font-bold mb-1">Ваши сообщения</h3>
-            <p className="text-xs max-w-xs">
-              Выберите переписку из списка слева или начните новый диалог с интересным блогером.
-            </p>
+          <div className="flex-1 flex flex-col items-center justify-center p-8 text-center text-slate-400">
+            <MessageSquare size={48} className="mb-3 opacity-30 text-brand" />
+            <h3 className="text-base font-extrabold mb-1">Ваши сообщения</h3>
+            <p className="text-xs max-w-xs text-slate-500 mb-4">Отправляйте личные сообщения, делитесь публикациями и звоните друзьям!</p>
             <button 
               onClick={() => setShowNewChat(true)}
-              className="mt-4 px-4 py-2 bg-brand text-white rounded-xl text-xs font-bold shadow-md shadow-brand/20 transition-all cursor-pointer hover:scale-102"
+              className="px-5 py-2.5 bg-brand hover:bg-brand-dark text-white rounded-xl text-xs font-extrabold shadow-lg transition-all cursor-pointer"
             >
-              Начать чат
+              Отправить сообщение
             </button>
           </div>
         )}
       </div>
 
-      {/* New Chat Modal Selector */}
-      <AnimatePresence>
-        {showNewChat && (
+      {/* Calling Modal Simulation */}
+      {showCallModal && activeRecipient && (
+        <AnimatePresence>
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/50" onClick={() => setShowNewChat(false)} />
+            <div className="absolute inset-0 bg-black/90 backdrop-blur-lg" />
             <motion.div 
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="relative w-full max-w-sm rounded-2xl border border-theme-lightBorder dark:border-theme-darkBorder bg-theme-lightCard dark:bg-theme-darkCard p-6 shadow-2xl z-10 transition-colors"
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              className="relative w-full max-w-md h-[80vh] bg-slate-950 text-white rounded-3xl overflow-hidden shadow-2xl z-10 flex flex-col justify-between p-6 border border-white/10"
             >
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-sm font-bold uppercase tracking-wider">Новое сообщение</h3>
-                <button 
-                  onClick={() => { setShowNewChat(false); setSearchQuery(''); }}
-                  className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-xs font-semibold rounded-lg text-slate-500"
-                >
-                  Закрыть
-                </button>
-              </div>
-
-              {/* Search Bar */}
-              <div className="relative mb-4">
-                <Search size={16} className="absolute left-3 top-3 text-slate-400" />
-                <input 
-                  type="text" 
-                  placeholder="Поиск по имени или username..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-100 dark:bg-slate-800 border border-theme-lightBorder dark:border-theme-darkBorder rounded-xl pl-9 pr-4 py-2 text-xs focus:outline-none"
-                />
-              </div>
-
-              {/* User list */}
-              <div className="flex flex-col gap-2 max-h-60 overflow-y-auto pr-1">
-                {filteredUsers.length === 0 ? (
-                  <p className="text-xs text-theme-lightMuted dark:text-theme-darkMuted italic text-center py-4">
-                    Пользователи не найдены
+              <div className="text-center pt-8 flex flex-col items-center gap-3">
+                <div className="relative">
+                  <img src={activeRecipient.photoURL} alt="Calling" className="w-24 h-24 rounded-full object-cover ring-4 ring-purple-500/50 animate-pulse" />
+                  <span className="absolute bottom-0 right-0 h-4 w-4 rounded-full bg-emerald-500 border-2 border-slate-950" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-black">{activeRecipient.displayName}</h3>
+                  <p className="text-xs text-purple-400 font-bold animate-pulse">
+                    {showCallModal === 'video' ? '📹 Видеовызов Instagram...' : '📞 Аудиовызов Instagram...'}
                   </p>
-                ) : (
-                  filteredUsers.map(user => (
-                    <button 
-                      key={user.uid}
-                      onClick={() => handleStartChat(user.uid)}
-                      className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-all text-left w-full cursor-pointer"
-                    >
-                      <img 
-                        src={user.photoURL} 
-                        alt={user.displayName} 
-                        className="w-9 h-9 rounded-full object-cover ring-1 ring-slate-200 dark:ring-slate-700"
-                      />
-                      <div>
-                        <p className="text-xs font-bold leading-tight">{user.displayName}</p>
-                        <p className="text-[10px] text-slate-550 leading-tight">@{user.username}</p>
-                      </div>
-                    </button>
-                  ))
+                </div>
+              </div>
+
+              {/* Video preview simulation */}
+              {showCallModal === 'video' && !isVideoMuted && (
+                <div className="w-full h-48 bg-slate-900 rounded-2xl overflow-hidden border border-white/10 relative">
+                  <video 
+                    src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+                    autoPlay
+                    loop
+                    muted
+                    className="w-full h-full object-cover"
+                  />
+                  <span className="absolute bottom-2 left-2 px-2 py-0.5 bg-black/60 rounded text-[9px] font-bold">Вы</span>
+                </div>
+              )}
+
+              {/* Controls bar */}
+              <div className="flex items-center justify-center gap-6 pb-6">
+                <button 
+                  onClick={() => setIsMicMuted(!isMicMuted)}
+                  className={`p-4 rounded-full transition-all cursor-pointer ${
+                    isMicMuted ? 'bg-red-600 text-white' : 'bg-white/20 text-white hover:bg-white/30'
+                  }`}
+                >
+                  {isMicMuted ? <MicOff size={22} /> : <Mic size={22} />}
+                </button>
+
+                <button 
+                  onClick={() => setShowCallModal(null)}
+                  className="p-5 bg-red-600 hover:bg-red-700 text-white rounded-full shadow-2xl transition-transform hover:scale-110 active:scale-95 cursor-pointer"
+                >
+                  <Phone size={26} className="rotate-[135deg]" />
+                </button>
+
+                {showCallModal === 'video' && (
+                  <button 
+                    onClick={() => setIsVideoMuted(!isVideoMuted)}
+                    className={`p-4 rounded-full transition-all cursor-pointer ${
+                      isVideoMuted ? 'bg-red-600 text-white' : 'bg-white/20 text-white hover:bg-white/30'
+                    }`}
+                  >
+                    {isVideoMuted ? <VideoOff size={22} /> : <Video size={22} />}
+                  </button>
                 )}
               </div>
             </motion.div>
           </div>
-        )}
-      </AnimatePresence>
+        </AnimatePresence>
+      )}
+
+      {/* Modal for starting a new chat */}
+      {showNewChat && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowNewChat(false)} />
+          
+          <div className="relative w-full max-w-sm bg-theme-lightCard dark:bg-theme-darkCard text-theme-lightText dark:text-theme-darkText rounded-3xl p-5 shadow-2xl z-10 border border-theme-lightBorder dark:border-theme-darkBorder">
+            <div className="flex justify-between items-center mb-3">
+              <h3 className="font-extrabold text-sm">Новое сообщение</h3>
+              <button onClick={() => setShowNewChat(false)} className="p-1 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-500">
+                <X size={18} />
+              </button>
+            </div>
+
+            <div className="relative mb-3">
+              <Search size={16} className="absolute left-3 top-2.5 text-slate-400" />
+              <input 
+                type="text"
+                placeholder="Поиск собеседника..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-slate-100 dark:bg-slate-800 border border-theme-lightBorder dark:border-theme-darkBorder rounded-xl pl-9 pr-3 py-2 text-xs focus:outline-none focus:border-brand"
+              />
+            </div>
+
+            <div className="max-h-64 overflow-y-auto flex flex-col gap-1">
+              {filteredUsers.map(user => (
+                <div 
+                  key={user.uid}
+                  onClick={() => handleStartChat(user.uid)}
+                  className="flex items-center gap-3 p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 cursor-pointer transition-all"
+                >
+                  <img src={user.photoURL} alt={user.displayName} className="w-9 h-9 rounded-full object-cover" />
+                  <div>
+                    <h4 className="text-xs font-bold leading-tight">{user.displayName}</h4>
+                    <span className="text-[10px] text-slate-400">@{user.username}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
