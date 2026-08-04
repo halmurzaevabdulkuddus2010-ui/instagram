@@ -319,7 +319,7 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted, isActive, han
       else if (text.includes('a4') || text.includes('влад') || reel.userId === 'vlad_a4') genre = 'a4';
       else if (text.includes('car') || text.includes('drift') || text.includes('bugatti') || text.includes('subaru')) genre = 'cars';
 
-      soundEngine.playTrack(genre);
+      soundEngine.playTrack(genre, reel.id);
     } else {
       soundEngine.stop();
     }
@@ -626,7 +626,7 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted, isActive, han
           }`}
         >
           <Music size={13} className={`${!isMuted ? 'text-emerald-400 animate-spin' : 'text-purple-400'} shrink-0`} />
-          <span className="truncate">{reel.audioTitle || '🎵 Футбол & Музыка — Оригинальный трек ⚽'}</span>
+          <span className="truncate">{reel.audioTitle || `🎵 @${author?.username || 'user'} — Оригинальный звук 🎶`}</span>
           {!isMuted ? (
             <span className="flex items-end gap-0.5 h-3 ml-1 shrink-0">
               <span className="w-0.5 h-full bg-emerald-400 animate-pulse" />
