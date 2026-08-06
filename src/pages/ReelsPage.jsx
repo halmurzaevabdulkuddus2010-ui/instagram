@@ -320,7 +320,7 @@ function ReelCard({ reel, users, currentUser, isMuted, setIsMuted, isActive }) {
   return (
     <div 
       className="reel-card w-full h-full snap-start relative flex flex-col justify-end select-none animate-fade-in"
-      onClick={handleDoubleTap}
+      onClick={handleTap}
     >
       {/* Video element or YouTube iframe or Motion Animated Video Fallback */}
       {ytId ? (
