@@ -164,6 +164,56 @@ export const dbService = {
     });
   },
 
+  subscribeToLiveComments: (liveId, callback) => {
+    const mockLiveComments = [
+      { id: 'lc_1', username: 'traveler_osh', text: 'Ого, крутой эфир! 😍' },
+      { id: 'lc_2', username: 'photo_kg', text: 'Привет из Оша! Сними горы!' },
+      { id: 'lc_3', username: 'reels_star', text: 'Качество супер 🚀🔴' },
+      { id: 'lc_4', username: 'vlad_a4', text: 'Ребята, всем привет! Челлендж бомба! 🔥' },
+      { id: 'lc_5', username: 'masha_medved', text: 'Маша смотрит эфир! 👧🐻' }
+    ];
+    
+    setTimeout(() => {
+      callback(mockLiveComments);
+    }, 100);
+
+    const chatSimulations = [
+      "Классный контент! 👍",
+      "Привет от подписчиков! ❤️",
+      "Вау, это очень круто!",
+      "Снимите Сулайман-Тоо!",
+      "Обожаю ваши трансляции! ✨",
+      "Кто тоже смотрит из Киргизии? 🇰🇬",
+      "Влад А4, привет!",
+      "Маша, а где Медведь? 🐻",
+      "Ура, прямой эфир! 🎉",
+      "Сделайте сходку блогеров!"
+    ];
+
+    const usersList = ['traveler_osh', 'photo_kg', 'reels_star', 'vlad_a4', 'masha_medved', 'user_123', 'sweet_girl', 'osh_blogger'];
+
+    const intervalId = setInterval(() => {
+      const randomUser = usersList[Math.floor(Math.random() * usersList.length)];
+      const randomText = chatSimulations[Math.floor(Math.random() * chatSimulations.length)];
+      const newComment = {
+        id: `lc_${Date.now()}`,
+        username: randomUser,
+        text: randomText,
+        createdAt: new Date().toISOString()
+      };
+      
+      mockLiveComments.push(newComment);
+      if (mockLiveComments.length > 15) {
+        mockLiveComments.shift();
+      }
+      callback([...mockLiveComments]);
+    }, 4000);
+
+    return () => {
+      clearInterval(intervalId);
+    };
+  },
+
   subscribeToConversations: (userId, callback) => {
     return mockSubscribe(KEYS.CONVERSATIONS, (conversations) => {
       const filtered = conversations.filter(c => c.participants.includes(userId))
