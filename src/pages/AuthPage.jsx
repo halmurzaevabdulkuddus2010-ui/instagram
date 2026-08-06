@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { Mail, Lock, User, Phone, CheckCircle, Smartphone, Globe } from 'lucide-react';
+import { Mail, Lock, User, Phone, CheckCircle, Smartphone, Globe, ChevronLeft } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function AuthPage() {
@@ -113,299 +113,323 @@ export default function AuthPage() {
   };
 
   return (
-    <div className="min-h-screen w-full flex bg-theme-lightBg dark:bg-theme-darkBg transition-colors duration-200">
+    <div className="min-h-screen w-full flex flex-col justify-between bg-white dark:bg-theme-darkBg text-slate-800 dark:text-white transition-colors duration-200">
       
-      {/* LEFT PANEL: Branding & Visuals (visible on desktop) */}
-      <div className="hidden lg:flex flex-1 flex-col justify-between p-12 bg-gradient-to-tr from-brand-dark via-brand to-osh-pink text-white relative overflow-hidden">
-        {/* Decorative backdrop patterns */}
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-white/20 via-transparent to-transparent pointer-events-none" />
-        <div className="absolute -bottom-48 -left-48 w-96 h-96 bg-white/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="flex items-center gap-2 relative z-10">
-          <span className="text-3xl font-black tracking-wider">INSTAGRAM</span>
-        </div>
-
-        <div className="max-w-md relative z-10">
-          <h1 className="text-5xl font-extrabold leading-tight tracking-tight mb-6">
-            Социальная сеть нового поколения.
-          </h1>
-          <p className="text-white/80 text-lg">
-            Делитесь лучшими моментами, снимайте захватывающие Reels, общайтесь с друзьями в реальном времени и открывайте для себя прекрасный город Ош.
-          </p>
-        </div>
-
-        <div className="flex justify-between text-xs text-white/50 relative z-10">
-          <span>© 2026 INSTAGRAM. Все права защищены.</span>
-          <span className="flex items-center gap-1">
-            <Globe size={12} />
-            <span>Русский (Кыргызстан)</span>
-          </span>
-        </div>
-      </div>
-
-      {/* RIGHT PANEL: Auth Card Form */}
-      <div className="flex-1 flex items-center justify-center p-8 bg-theme-lightBg dark:bg-theme-darkBg transition-colors">
-        <div className="w-full max-w-md">
-          {/* Logo on mobile */}
-          <div className="lg:hidden text-center mb-8">
-            <h2 className="text-3xl font-black tracking-tight bg-gradient-to-r from-brand to-osh-pink bg-clip-text text-transparent">
-              INSTAGRAM
-            </h2>
-            <p className="text-xs text-theme-lightMuted dark:text-theme-darkMuted mt-1">
-              Социальная сеть нового поколения
-            </p>
+      <div className="flex-1 flex w-full max-w-6xl mx-auto items-center justify-center px-4 py-8 lg:py-16">
+        
+        {/* LEFT PANEL: Official Instagram Replicating Illustration (visible on desktop) */}
+        <div className="hidden lg:flex w-1/2 flex-col justify-center items-start pr-12 border-r border-slate-100 dark:border-slate-800">
+          {/* Logo with Gradient */}
+          <div className="flex items-center gap-3 mb-6">
+            <svg className="w-16 h-16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="insta-grad-login" x1="0" y1="1" x2="1" y2="0">
+                  <stop offset="0%" stopColor="#f09433"/>
+                  <stop offset="25%" stopColor="#e6683c"/>
+                  <stop offset="50%" stopColor="#dc2743"/>
+                  <stop offset="75%" stopColor="#cc2366"/>
+                  <stop offset="100%" stopColor="#bc1888"/>
+                </linearGradient>
+              </defs>
+              <rect x="2" y="2" width="20" height="20" rx="6" stroke="url(#insta-grad-login)" strokeWidth="2"/>
+              <circle cx="12" cy="12" r="4.5" stroke="url(#insta-grad-login)" strokeWidth="2"/>
+              <circle cx="17.5" cy="6.5" r="1.2" fill="url(#insta-grad-login)"/>
+            </svg>
+            <span className="text-3xl font-black tracking-widest bg-gradient-to-r from-brand to-osh-pink bg-clip-text text-transparent">INSTAGRAM</span>
           </div>
 
-          <div className="bg-theme-lightCard dark:bg-theme-darkCard border border-theme-lightBorder dark:border-theme-darkBorder rounded-3xl p-8 shadow-xl transition-colors duration-200">
-            {/* Tab switch header */}
-            <div className="flex gap-4 mb-6 border-b border-theme-lightBorder dark:border-theme-darkBorder pb-3">
-              <button 
-                onClick={() => { setMode('login'); clearForm(); }}
-                className={`pb-2 text-sm font-bold border-b-2 transition-all ${
-                  mode === 'login' ? 'border-brand text-brand' : 'border-transparent text-slate-500'
-                }`}
-              >
-                Вход
-              </button>
-              <button 
-                onClick={() => { setMode('register'); clearForm(); }}
-                className={`pb-2 text-sm font-bold border-b-2 transition-all ${
-                  mode === 'register' ? 'border-brand text-brand' : 'border-transparent text-slate-500'
-                }`}
-              >
-                Регистрация
-              </button>
-              <button 
-                onClick={() => { setMode('phone'); clearForm(); }}
-                className={`pb-2 text-sm font-bold border-b-2 transition-all ${
-                  mode === 'phone' ? 'border-brand text-brand' : 'border-transparent text-slate-500'
-                }`}
-              >
-                Телефон
-              </button>
+          <h1 className="font-serif text-3xl xl:text-4xl text-slate-855 dark:text-slate-100 leading-tight font-normal mb-8">
+            Посмотрите, какими моментами из жизни поделились ваши{" "}
+            <span className="bg-gradient-to-r from-orange-500 via-pink-500 to-purple-600 bg-clip-text text-transparent font-medium">
+              близкие друзья.
+            </span>
+          </h1>
+
+          {/* Floating visual mock preview cards matching the user screenshot */}
+          <div className="relative w-full max-w-sm h-80 mx-auto mt-6 bg-slate-50 dark:bg-slate-900/40 rounded-3xl p-6 overflow-hidden border border-slate-100 dark:border-slate-800">
+            {/* Left Card */}
+            <div className="absolute left-4 bottom-4 w-36 h-52 rounded-2xl overflow-hidden shadow-lg border-2 border-white dark:border-slate-800 transform -rotate-6 z-10 hover:scale-105 transition-transform duration-300">
+              <img src="https://images.unsplash.com/photo-1517841905240-472988babdf9?w=400&auto=format&fit=crop&q=80" alt="Friends laughing" className="w-full h-full object-cover" />
+              <div className="absolute top-2 left-2 bg-pink-500 text-white text-[8px] font-extrabold px-1.5 py-0.5 rounded-full uppercase tracking-wider">
+                Сториз
+              </div>
             </div>
 
-            {/* Error Message */}
-            <AnimatePresence>
-              {error && (
-                <motion.div 
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0 }}
-                  className="mb-4 p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 text-xs font-semibold rounded-xl text-red-500 text-center"
-                >
-                  {error}
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            {/* Email LOGIN Form */}
-            {mode === 'login' && (
-              <form onSubmit={handleLogin} className="flex flex-col gap-4">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-theme-lightMuted dark:text-theme-darkMuted">Email / Логин</label>
-                  <div className="relative">
-                    <Mail size={16} className="absolute left-3.5 top-3.5 text-slate-400" />
-                    <input 
-                      type="text" 
-                      placeholder="admin@bloggerosh.kg или traveler_osh"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-slate-100 dark:bg-slate-800/50 border border-theme-lightBorder dark:border-theme-darkBorder rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-brand"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-theme-lightMuted dark:text-theme-darkMuted">Пароль</label>
-                  <div className="relative">
-                    <Lock size={16} className="absolute left-3.5 top-3.5 text-slate-400" />
-                    <input 
-                      type="password" 
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full bg-slate-100 dark:bg-slate-800/50 border border-theme-lightBorder dark:border-theme-darkBorder rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-brand"
-                    />
-                  </div>
-                </div>
-
-                <button 
-                  type="submit" 
-                  disabled={loading}
-                  className="w-full py-3 bg-brand hover:bg-brand-dark text-white rounded-xl text-sm font-bold shadow-md shadow-brand/20 transition-all cursor-pointer"
-                >
-                  {loading ? 'Вход...' : 'Войти'}
-                </button>
-              </form>
-            )}
-
-            {/* Email REGISTER Form */}
-            {mode === 'register' && (
-              <form onSubmit={handleRegister} className="flex flex-col gap-4">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-theme-lightMuted dark:text-theme-darkMuted">Имя в INSTAGRAM</label>
-                  <div className="relative">
-                    <User size={16} className="absolute left-3.5 top-3.5 text-slate-400" />
-                    <input 
-                      type="text" 
-                      placeholder="Алибек Каримов"
-                      value={displayName}
-                      onChange={(e) => setDisplayName(e.target.value)}
-                      className="w-full bg-slate-100 dark:bg-slate-800/50 border border-theme-lightBorder dark:border-theme-darkBorder rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-brand"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-theme-lightMuted dark:text-theme-darkMuted">Username (никнейм)</label>
-                  <div className="relative">
-                    <span className="absolute left-3.5 top-3.5 text-slate-400 text-sm font-semibold">@</span>
-                    <input 
-                      type="text" 
-                      placeholder="alibek_osh"
-                      value={username}
-                      onChange={(e) => setUsername(e.target.value)}
-                      className="w-full bg-slate-100 dark:bg-slate-800/50 border border-theme-lightBorder dark:border-theme-darkBorder rounded-xl pl-8 pr-4 py-3 text-sm focus:outline-none focus:border-brand"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-theme-lightMuted dark:text-theme-darkMuted">Email</label>
-                  <div className="relative">
-                    <Mail size={16} className="absolute left-3.5 top-3.5 text-slate-400" />
-                    <input 
-                      type="email" 
-                      placeholder="alibek@example.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-slate-100 dark:bg-slate-800/50 border border-theme-lightBorder dark:border-theme-darkBorder rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-brand"
-                    />
-                  </div>
-                </div>
-
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-xs font-bold uppercase tracking-wider text-theme-lightMuted dark:text-theme-darkMuted">Пароль</label>
-                  <div className="relative">
-                    <Lock size={16} className="absolute left-3.5 top-3.5 text-slate-400" />
-                    <input 
-                      type="password" 
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      className="w-full bg-slate-100 dark:bg-slate-800/50 border border-theme-lightBorder dark:border-theme-darkBorder rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-brand"
-                    />
-                  </div>
-                </div>
-
-                <button 
-                  type="submit" 
-                  disabled={loading}
-                  className="w-full py-3 bg-brand hover:bg-brand-dark text-white rounded-xl text-sm font-bold shadow-md shadow-brand/20 transition-all cursor-pointer"
-                >
-                  {loading ? 'Создание аккаунта...' : 'Создать аккаунт'}
-                </button>
-              </form>
-            )}
-
-            {/* Phone Number Auth Form */}
-            {mode === 'phone' && (
-              <div className="flex flex-col gap-4">
-                {!otpSent ? (
-                  <form onSubmit={handlePhoneSubmit} className="flex flex-col gap-4">
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold uppercase tracking-wider text-theme-lightMuted dark:text-theme-darkMuted">Номер телефона</label>
-                      <div className="relative">
-                        <Smartphone size={16} className="absolute left-3.5 top-3.5 text-slate-400" />
-                        <input 
-                          type="tel" 
-                          placeholder="+996 777 123 456"
-                          value={phoneNumber}
-                          onChange={(e) => setPhoneNumber(e.target.value)}
-                          className="w-full bg-slate-100 dark:bg-slate-800/50 border border-theme-lightBorder dark:border-theme-darkBorder rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-brand"
-                        />
-                      </div>
-                    </div>
-
-                    <button 
-                      type="submit" 
-                      disabled={loading}
-                      className="w-full py-3 bg-brand hover:bg-brand-dark text-white rounded-xl text-sm font-bold shadow-md shadow-brand/20 transition-all cursor-pointer"
-                    >
-                      {loading ? 'Отправка...' : 'Отправить SMS-код'}
-                    </button>
-                  </form>
-                ) : (
-                  <form onSubmit={handleOtpVerify} className="flex flex-col gap-4">
-                    <p className="text-xs text-slate-500 text-center">
-                      На номер <span className="font-semibold">{phoneNumber}</span> отправлен SMS-код подтверждения.
-                    </p>
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-xs font-bold uppercase tracking-wider text-theme-lightMuted dark:text-theme-darkMuted">Код из SMS</label>
-                      <div className="relative">
-                        <Lock size={16} className="absolute left-3.5 top-3.5 text-slate-400" />
-                        <input 
-                          type="text" 
-                          maxLength={6}
-                          placeholder="Введите 123456"
-                          value={otpCode}
-                          onChange={(e) => setOtpCode(e.target.value)}
-                          className="w-full bg-slate-100 dark:bg-slate-800/50 border border-theme-lightBorder dark:border-theme-darkBorder rounded-xl pl-11 pr-4 py-3 text-sm focus:outline-none focus:border-brand text-center tracking-widest font-mono text-lg"
-                        />
-                      </div>
-                    </div>
-
-                    <button 
-                      type="submit" 
-                      disabled={loading}
-                      className="w-full py-3 bg-brand hover:bg-brand-dark text-white rounded-xl text-sm font-bold shadow-md shadow-brand/20 transition-all cursor-pointer"
-                    >
-                      {loading ? 'Проверка...' : 'Войти по коду'}
-                    </button>
-                    
-                    <button 
-                      type="button"
-                      onClick={() => setOtpSent(false)}
-                      className="text-xs text-slate-500 hover:text-brand font-semibold text-center"
-                    >
-                      Изменить номер телефона
-                    </button>
-                  </form>
-                )}
+            {/* Right Card */}
+            <div className="absolute right-4 top-4 w-32 h-48 rounded-2xl overflow-hidden shadow-lg border-2 border-white dark:border-slate-800 transform rotate-6 z-10 hover:scale-105 transition-transform duration-300">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80" alt="Close friend smiling" className="w-full h-full object-cover" />
+              <div className="absolute bottom-2 right-2 bg-green-500 text-white p-1 rounded-full text-[10px] shadow-md flex items-center justify-center font-bold">
+                ★
               </div>
-            )}
+            </div>
 
-            {/* Quick SSO Logins */}
-            <div className="mt-8 pt-6 border-t border-theme-lightBorder dark:border-theme-darkBorder text-center">
-              <span className="text-xs text-theme-lightMuted dark:text-theme-darkMuted block mb-4">или войти с помощью</span>
+            {/* Center Card */}
+            <div className="absolute left-1/2 top-8 w-44 h-60 rounded-2xl overflow-hidden shadow-xl border-2 border-white dark:border-slate-800 transform -translate-x-1/2 z-20 hover:scale-105 transition-transform duration-300">
+              <img src="https://images.unsplash.com/photo-1539571696357-5a69c17a67c6?w=400&auto=format&fit=crop&q=80" alt="Hugging friends" className="w-full h-full object-cover" />
+              <div className="absolute top-3 left-3 flex items-center gap-1.5">
+                <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix" className="w-5 h-5 rounded-full border border-white" alt="avatar" />
+                <span className="text-[9px] font-bold text-white drop-shadow-md">beka_osh</span>
+              </div>
+              <div className="absolute bottom-3 left-3 bg-black/40 backdrop-blur-md px-2.5 py-0.5 rounded-full text-[9px] text-white font-extrabold flex items-center gap-1">
+                ❤️ 452
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* RIGHT PANEL: Authentic Instagram Login Form Container */}
+        <div className="w-full lg:w-1/2 flex justify-center lg:pl-12">
+          <div className="w-full max-w-sm flex flex-col gap-5">
+            
+            {/* Split top card for desktop */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-9 shadow-sm">
+              
+              {/* Header with back arrow */}
+              <div className="flex items-center gap-3 mb-6">
+                {mode !== 'login' && (
+                  <button 
+                    onClick={() => { setMode('login'); clearForm(); }} 
+                    className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-full transition-colors cursor-pointer text-slate-700 dark:text-slate-200"
+                  >
+                    <ChevronLeft size={20} />
+                  </button>
+                )}
+                <h2 className="text-xl font-bold text-slate-800 dark:text-white">
+                  {mode === 'login' ? 'Войти в Instagram' : mode === 'register' ? 'Регистрация' : 'Вход по телефону'}
+                </h2>
+              </div>
+
+              {/* Error Message */}
+              <AnimatePresence>
+                {error && (
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    className="mb-4 p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 text-[11px] font-semibold rounded-lg text-red-500 text-center"
+                  >
+                    {error}
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* LOGIN FORM */}
+              {mode === 'login' && (
+                <form onSubmit={handleLogin} className="flex flex-col gap-3">
+                  <input 
+                    type="text" 
+                    placeholder="Имя пользователя или эл. адрес"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-905 border border-slate-200 dark:border-slate-700 rounded-md px-3.5 py-3 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-400 focus:bg-white dark:focus:bg-slate-950"
+                  />
+                  <input 
+                    type="password" 
+                    placeholder="Пароль"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-905 border border-slate-200 dark:border-slate-700 rounded-md px-3.5 py-3 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-400 focus:bg-white dark:focus:bg-slate-950"
+                  />
+                  
+                  <button 
+                    type="submit" 
+                    disabled={loading}
+                    className="w-full py-3 bg-[#4cb5f9] hover:bg-[#189bf2] text-white text-xs font-extrabold rounded-md cursor-pointer transition-colors shadow-sm disabled:opacity-50 mt-2"
+                  >
+                    {loading ? 'Вход...' : 'Войти'}
+                  </button>
+
+                  <a 
+                    href="#forgot" 
+                    onClick={(e) => { e.preventDefault(); alert("Обратитесь к администратору osh_admin для сброса пароля."); }}
+                    className="text-xs text-[#00376b] dark:text-[#4cb5f9] hover:underline text-center mt-3 block"
+                  >
+                    Забыли пароль?
+                  </a>
+                </form>
+              )}
+
+              {/* REGISTRATION FORM */}
+              {mode === 'register' && (
+                <form onSubmit={handleRegister} className="flex flex-col gap-3">
+                  <input 
+                    type="text" 
+                    placeholder="Имя и фамилия"
+                    value={displayName}
+                    onChange={(e) => setDisplayName(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-905 border border-slate-200 dark:border-slate-700 rounded-md px-3.5 py-3 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-400 focus:bg-white"
+                  />
+                  <input 
+                    type="text" 
+                    placeholder="Имя пользователя (никнейм)"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-905 border border-slate-200 dark:border-slate-700 rounded-md px-3.5 py-3 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-400 focus:bg-white"
+                  />
+                  <input 
+                    type="email" 
+                    placeholder="Электронный адрес (email)"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-905 border border-slate-200 dark:border-slate-700 rounded-md px-3.5 py-3 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-400 focus:bg-white"
+                  />
+                  <input 
+                    type="password" 
+                    placeholder="Пароль"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="w-full bg-slate-50 dark:bg-slate-905 border border-slate-200 dark:border-slate-700 rounded-md px-3.5 py-3 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-400 focus:bg-white"
+                  />
+
+                  <button 
+                    type="submit" 
+                    disabled={loading}
+                    className="w-full py-3 bg-[#4cb5f9] hover:bg-[#189bf2] text-white text-xs font-extrabold rounded-md cursor-pointer transition-colors shadow-sm disabled:opacity-50 mt-2"
+                  >
+                    {loading ? 'Создание...' : 'Регистрация'}
+                  </button>
+                </form>
+              )}
+
+              {/* PHONE OTP FORM */}
+              {mode === 'phone' && (
+                <div className="flex flex-col gap-3">
+                  {!otpSent ? (
+                    <form onSubmit={handlePhoneSubmit} className="flex flex-col gap-3">
+                      <input 
+                        type="tel" 
+                        placeholder="Номер телефона (+996...)"
+                        value={phoneNumber}
+                        onChange={(e) => setPhoneNumber(e.target.value)}
+                        className="w-full bg-slate-50 dark:bg-slate-905 border border-slate-200 dark:border-slate-700 rounded-md px-3.5 py-3 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-400 focus:bg-white"
+                      />
+                      <button 
+                        type="submit" 
+                        disabled={loading}
+                        className="w-full py-3 bg-[#4cb5f9] hover:bg-[#189bf2] text-white text-xs font-extrabold rounded-md cursor-pointer transition-colors shadow-sm disabled:opacity-50 mt-2"
+                      >
+                        {loading ? 'Отправка...' : 'Отправить код'}
+                      </button>
+                    </form>
+                  ) : (
+                    <form onSubmit={handleOtpVerify} className="flex flex-col gap-3">
+                      <p className="text-[10px] text-slate-400 text-center mb-1">
+                        Код отправлен на <span className="font-semibold text-slate-600 dark:text-slate-350">{phoneNumber}</span>
+                      </p>
+                      <input 
+                        type="text" 
+                        maxLength={6}
+                        placeholder="Введите код подтверждения"
+                        value={otpCode}
+                        onChange={(e) => setOtpCode(e.target.value)}
+                        className="w-full bg-slate-50 dark:bg-slate-905 border border-slate-200 dark:border-slate-700 rounded-md px-3.5 py-3 text-xs text-slate-800 dark:text-slate-200 focus:outline-none focus:border-slate-400 focus:bg-white text-center tracking-widest font-bold"
+                      />
+                      <button 
+                        type="submit" 
+                        disabled={loading}
+                        className="w-full py-3 bg-[#4cb5f9] hover:bg-[#189bf2] text-white text-xs font-extrabold rounded-md cursor-pointer transition-colors shadow-sm disabled:opacity-50 mt-2"
+                      >
+                        {loading ? 'Проверка...' : 'Войти по коду'}
+                      </button>
+                      <button 
+                        type="button" 
+                        onClick={() => setOtpSent(false)}
+                        className="text-[11px] text-[#00376b] dark:text-[#4cb5f9] hover:underline text-center"
+                      >
+                        Изменить номер телефона
+                      </button>
+                    </form>
+                  )}
+                </div>
+              )}
+
+              {/* Dividers */}
+              <div className="flex items-center my-5">
+                <div className="flex-1 h-[1px] bg-slate-200 dark:bg-slate-800"></div>
+                <span className="text-[10px] font-bold text-slate-400 uppercase px-4 tracking-wider">ИЛИ</span>
+                <div className="flex-1 h-[1px] bg-slate-200 dark:bg-slate-800"></div>
+              </div>
+
+              {/* Google login options */}
               <button 
                 type="button" 
                 onClick={handleGoogleSignIn}
-                className="w-full py-3 border border-theme-lightBorder dark:border-theme-darkBorder rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 text-sm font-bold flex items-center justify-center gap-3 transition-all cursor-pointer text-slate-700 dark:text-slate-200"
+                className="flex items-center justify-center gap-2 text-xs font-extrabold text-[#385185] dark:text-[#4cb5f9] w-full py-1 hover:underline cursor-pointer"
               >
-                <svg className="w-5 h-5" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                  <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                  <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
-                  <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
-                </svg>
-                <span>Войти через Google</span>
+                <span className="text-sm">🔵</span> Войти через Google / Facebook
               </button>
+
+              {/* Phone login switch */}
+              {mode !== 'phone' && (
+                <button 
+                  type="button" 
+                  onClick={() => { setMode('phone'); clearForm(); }}
+                  className="text-xs text-[#00376b] dark:text-[#4cb5f9] hover:underline w-full text-center mt-3 block"
+                >
+                  Войти по номеру телефона
+                </button>
+              )}
             </div>
 
-            {/* Quick credentials helper */}
-            <div className="mt-6 p-4 rounded-2xl bg-brand/5 border border-brand/10 text-[11px] text-theme-lightMuted dark:text-theme-darkMuted leading-relaxed">
-              <span className="font-bold text-brand block mb-1">Демо-аккаунты для быстрой проверки:</span>
+            {/* Bottom Account Switch Card */}
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-5 text-center text-xs">
+              {mode === 'login' ? (
+                <div className="flex items-center justify-center gap-1 text-slate-600 dark:text-slate-400">
+                  <span>У вас нет аккаунта?</span>
+                  <button 
+                    onClick={() => { setMode('register'); clearForm(); }}
+                    className="text-[#4cb5f9] font-extrabold hover:underline cursor-pointer"
+                  >
+                    Создать новый аккаунт
+                  </button>
+                </div>
+              ) : (
+                <div className="flex items-center justify-center gap-1 text-slate-600 dark:text-slate-400">
+                  <span>Уже зарегистрированы?</span>
+                  <button 
+                    onClick={() => { setMode('login'); clearForm(); }}
+                    className="text-[#4cb5f9] font-extrabold hover:underline cursor-pointer"
+                  >
+                    Войти в аккаунт
+                  </button>
+                </div>
+              )}
+            </div>
+
+            {/* Quick credentials Helper */}
+            <div className="p-4 rounded-xl bg-indigo-50/50 dark:bg-indigo-950/20 border border-indigo-100 dark:border-indigo-900/50 text-[10px] text-slate-500 dark:text-slate-400 leading-relaxed">
+              <span className="font-extrabold text-[#00376b] dark:text-[#4cb5f9] block mb-1">Демо-аккаунты для быстрой проверки:</span>
               <ul className="list-disc pl-4 space-y-1">
-                <li>Админ: <span className="font-semibold text-slate-750 dark:text-slate-200">admin@bloggerosh.kg</span> (или <span className="font-semibold text-slate-750 dark:text-slate-200">osh_admin</span>)</li>
-                <li>Блогер: <span className="font-semibold text-slate-750 dark:text-slate-200">traveler_osh</span></li>
-                <li>Пароль: <span className="font-semibold text-slate-750 dark:text-slate-200">любой пароль</span></li>
+                <li>Админ: <span className="font-semibold text-slate-700 dark:text-slate-350">admin@bloggerosh.kg</span> (или <span className="font-semibold text-slate-700 dark:text-slate-350">osh_admin</span>)</li>
+                <li>Блогер: <span className="font-semibold text-slate-700 dark:text-slate-350">traveler_osh</span></li>
+                <li>Пароль: <span className="font-semibold text-slate-700 dark:text-slate-350">любой пароль</span></li>
               </ul>
             </div>
           </div>
         </div>
       </div>
+
+      {/* FOOTER: Official Instagram replica Meta Footer */}
+      <footer className="w-full pb-8 pt-4 px-4 text-center text-[10px] text-slate-400 dark:text-slate-500 bg-white dark:bg-theme-darkBg transition-colors border-t border-slate-50 dark:border-slate-900">
+        <div className="flex gap-4 flex-wrap justify-center font-medium max-w-4xl mx-auto mb-3">
+          <span className="hover:underline cursor-pointer">Meta</span>
+          <span className="hover:underline cursor-pointer">Информация</span>
+          <span className="hover:underline cursor-pointer">Блог</span>
+          <span className="hover:underline cursor-pointer">Вакансии</span>
+          <span className="hover:underline cursor-pointer">Помощь</span>
+          <span className="hover:underline cursor-pointer">API</span>
+          <span className="hover:underline cursor-pointer">Конфиденциальность</span>
+          <span className="hover:underline cursor-pointer">Условия</span>
+          <span className="hover:underline cursor-pointer">Места</span>
+          <span className="hover:underline cursor-pointer">Instagram Lite</span>
+          <span className="hover:underline cursor-pointer">Threads</span>
+          <span className="hover:underline cursor-pointer">Загрузка контактов и лица</span>
+        </div>
+        <div className="flex items-center justify-center gap-1.5 text-[9px] uppercase tracking-wider text-slate-400 font-bold">
+          <span>© 2026 INSTAGRAM FROM</span>
+          <span className="tracking-widest font-black text-slate-500">∞ Meta</span>
+        </div>
+      </footer>
     </div>
   );
 }
