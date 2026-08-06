@@ -2,24 +2,6 @@
 
 export const SEED_USERS = [
   {
-    uid: "ai_assistant",
-    username: "ai_assistant",
-    displayName: "AI ИИ-Помощник 🤖",
-    email: "ai@instagram.com",
-    phone: "+18005550199",
-    bio: "Умный виртуальный ИИ-ассистент Instagram 🤖 Задай любой вопрос, попроси придумать описание к фото, трек или идею для Reels!",
-    photoURL: "https://api.dicebear.com/7.x/bottts/svg?seed=ai_assistant&backgroundColor=c0f2fe",
-    coverURL: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1200&auto=format&fit=crop&q=80",
-    followers: ["traveler_osh", "photo_kg", "reels_star", "osh_admin"],
-    following: [],
-    blockedUsers: [],
-    isPrivate: false,
-    isAdmin: false,
-    isVerified: true,
-    featuredMusic: { title: "AI Cyber Beats 🤖⚡", artist: "Instagram AI", audioGenre: "a4" },
-    createdAt: new Date().toISOString()
-  },
-  {
     uid: "osh_admin",
     username: "osh_admin",
     displayName: "Admin INSTAGRAM",
@@ -290,416 +272,97 @@ export const SEED_POSTS = [
   }
 ];
 
-export const SEED_REELS = [
-  {
-    id: "reel_masha_1",
-    userId: "masha_medved",
-    type: "reel",
-    mediaURL: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-    coverURL: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&auto=format&fit=crop&q=80",
-    caption: "👧🐻 Маша и Медведь - «День Варенья»! 🍓🍯 Забавные приключения Маши в волшебном лесу!🍿 #машаимедведь #мультики #masha #kids",
-    hashtags: ["машаимедведь", "мультики", "masha", "kids"],
-    audioTitle: "🎵 Маша и Медведь — Песенка про Варенье 🍓🎈",
-    likes: ["traveler_osh", "photo_kg", "reels_star", "osh_admin"],
-    saves: ["masha_medved"],
-    viewsCount: 28490,
-    commentsCount: 35,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date().toISOString()
-  },
-  {
-    id: "reel_masha_2",
-    userId: "masha_medved",
-    type: "reel",
-    mediaURL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-    coverURL: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=800&auto=format&fit=crop&q=80",
-    caption: "👧🎈 Маша и Медведь - «Большая Стирка»! 🧼💦 Смотрите оригинальную серию прямо тут! #машаимедведь #мультики #masha #funny",
-    hashtags: ["машаимедведь", "мультики", "masha", "funny"],
-    audioTitle: "🎵 Маша и Медведь — Большая Стирка (Саундтрек) 🧼💦",
-    likes: ["traveler_osh", "reels_star", "osh_admin"],
-    saves: [],
-    viewsCount: 19800,
-    commentsCount: 24,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 15 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_masha_3",
-    userId: "masha_medved",
-    type: "reel",
-    mediaURL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-    coverURL: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=800&auto=format&fit=crop&q=80",
-    caption: "👧🐾 Маша и Медведь - «Следы невиданных зверей»! 🐻👣 Веселые расследования Маши! #машаимедведь #мультики #cartoons",
-    hashtags: ["машаимедведь", "мультики", "cartoons"],
-    audioTitle: "🎵 Маша и Медведь — Следы Невиданных Зверей 🐾🐻",
-    likes: ["photo_kg", "reels_star"],
-    saves: ["masha_medved"],
-    viewsCount: 22100,
-    commentsCount: 18,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 45 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_a4_1",
-    userId: "vlad_a4",
-    type: "reel",
-    mediaURL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-    coverURL: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=80",
-    caption: "1,000 ЗАДАНИЙ за 24 ЧАСА ЧЕЛЛЕНДЖ ! 😱 Наш самый взрывной выпуск А4! Смотри прямо тут 👇 #a4 #challenge #24hours",
-    hashtags: ["a4", "challenge", "24hours"],
-    audioTitle: "🎵 Влад А4 — 1,000 Заданий 24 Часа (Официальный Бит) ⚡🔥",
-    likes: ["traveler_osh", "photo_kg", "reels_star", "osh_admin"],
-    saves: ["vlad_a4"],
-    viewsCount: 15420,
-    commentsCount: 22,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_a4_2",
-    userId: "vlad_a4",
-    type: "reel",
-    mediaURL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4",
-    coverURL: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80",
-    caption: "100 СЛОЕВ ЕДЫ ЧЕЛЛЕНДЖ ! 🍔🌭 Кто съест больше всего — побеждает! #a4 #challenge #food #fun",
-    hashtags: ["a4", "challenge", "food", "fun"],
-    audioTitle: "🎵 Влад А4 — 100 Слоев Еды Челлендж 🍔🌭",
-    likes: ["reels_star", "photo_kg"],
-    saves: [],
-    viewsCount: 12890,
-    commentsCount: 14,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_a4_3",
-    userId: "vlad_a4",
-    type: "reel",
-    mediaURL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
-    coverURL: "https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=800&auto=format&fit=crop&q=80",
-    caption: "ПОБЕГ ИЗ САМОЙ СТРОГОЙ ТЮРЬМЫ ЗА 24 ЧАСА ! 🚨🔓 Сбежали ли мы от охранников? #a4 #jailbreak #escape #vlad",
-    hashtags: ["a4", "jailbreak", "escape", "vlad"],
-    audioTitle: "🎵 A4 Production — Побег из Тюрьмы Экшен Бит 🚨🔓",
-    likes: ["traveler_osh", "reels_star", "osh_admin"],
-    saves: ["vlad_a4"],
-    viewsCount: 9410,
-    commentsCount: 8,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_a4_4",
-    userId: "vlad_a4",
-    type: "reel",
-    mediaURL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-    coverURL: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=80",
-    caption: "ПОЛ ЭТО ЛАВА В РЕАЛЬНОЙ ЖИЗНИ ! 🌋🔥 Кто коснется пола — выбывает из игры! #a4 #lava #challenge #vlad",
-    hashtags: ["a4", "lava", "challenge", "vlad"],
-    audioTitle: "🎵 Влад А4 — Пол Это Лава Ремикс 🌋🔊",
-    likes: ["traveler_osh", "photo_kg", "reels_star"],
-    saves: [],
-    viewsCount: 18200,
-    commentsCount: 29,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_a4_5",
-    userId: "vlad_a4",
-    type: "reel",
-    mediaURL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
-    coverURL: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&auto=format&fit=crop&q=80",
-    caption: "УГАДАЙ СОК ПО ВКУСУ ЧЕЛЛЕНДЖ ! 🧃👅 Кто ошибся — выполняет с закрытыми глазами! #a4 #challenge #vlad",
-    hashtags: ["a4", "challenge", "vlad"],
-    audioTitle: "🎵 Влад А4 — Угадай Сок По Вкусу 🧃👅",
-    likes: ["reels_star", "osh_admin"],
-    saves: [],
-    viewsCount: 21300,
-    commentsCount: 34,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_cartoon_1",
-    userId: "cartoon_master",
-    type: "reel",
-    mediaURL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
-    coverURL: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=800&auto=format&fit=crop&q=80",
-    caption: "🍿 3D Мультфильм: Приключения в мире Minecraft! Эпическая битвы анимации ⚔️🟩 #cartoon #мультики #minecraft #3d #kids",
-    hashtags: ["cartoon", "мультики", "minecraft", "3d", "kids"],
-    audioTitle: "🎵 Minecraft 3D Animation — Dubstep Remix 🟩⚔️",
-    likes: ["traveler_osh", "photo_kg", "reels_star", "osh_admin"],
-    saves: ["traveler_osh"],
-    viewsCount: 5890,
-    commentsCount: 12,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 30 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_cartoon_2",
-    userId: "cartoon_master",
-    type: "reel",
-    mediaURL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
-    coverURL: "https://images.unsplash.com/photo-1563089145-599997674d42?w=800&auto=format&fit=crop&q=80",
-    caption: "🐱🐭 Том и Джерри — ЛУЧШИЕ МОМЕНТЫ! Классика легендарных мультиков! 🍿✨ #cartoon #мультики #tomandjerry #funny",
-    hashtags: ["cartoon", "мультики", "tomandjerry", "funny"],
-    audioTitle: "🎵 Том и Джерри — Classic Cartoon Jazz 🎷🐱",
-    likes: ["reels_star", "photo_kg", "osh_admin"],
-    saves: [],
-    viewsCount: 7120,
-    commentsCount: 9,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_cartoon_3",
-    userId: "cartoon_master",
-    type: "reel",
-    mediaURL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4",
-    coverURL: "https://images.unsplash.com/photo-1578632767115-351597cf2477?w=800&auto=format&fit=crop&q=80",
-    caption: "🧽 Спанч Боб и Патрик — Веселье в Красти Краб! 🍔💛 #cartoon #мультики #spongebob #animation",
-    hashtags: ["cartoon", "мультики", "spongebob", "animation"],
-    audioTitle: "🎵 SpongeBob — Fun Song Beach Party 🧽🍔",
-    likes: ["traveler_osh", "reels_star"],
-    saves: ["cartoon_master"],
-    viewsCount: 4390,
-    commentsCount: 7,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_cartoon_7",
-    userId: "cartoon_master",
-    type: "reel",
-    mediaURL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4",
-    coverURL: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&auto=format&fit=crop&q=80",
-    caption: "🐼 Кунг-Фу Панда По — Веселая битва за пельмешки! 🥟🥋 #cartoon #kungfupanda #funny #animation",
-    hashtags: ["cartoon", "kungfupanda", "funny", "animation"],
-    audioTitle: "🎵 Kung Fu Panda — Dragon Warrior Epic Theme 🥟🥋",
-    likes: ["reels_star", "photo_kg", "osh_admin"],
-    saves: [],
-    viewsCount: 16500,
-    commentsCount: 28,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_cartoon_8",
-    userId: "cartoon_master",
-    type: "reel",
-    mediaURL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4",
-    coverURL: "https://images.unsplash.com/photo-1563089145-599997674d42?w=800&auto=format&fit=crop&q=80",
-    caption: "🐿️ Ледниковый Период — Белка Скрат и Желудь! 🌰❄️ Самые смешные моменты! #cartoon #iceage #scrat #funny",
-    hashtags: ["cartoon", "iceage", "scrat", "funny"],
-    audioTitle: "🎵 Ice Age — Scrat Acorn Madness Theme 🌰❄️",
-    likes: ["traveler_osh", "photo_kg"],
-    saves: ["cartoon_master"],
-    viewsCount: 29800,
-    commentsCount: 41,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_supercar_1",
-    userId: "reels_star",
-    type: "reel",
-    mediaURL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackOnStreetAndDirt.mp4",
-    coverURL: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&auto=format&fit=crop&q=80",
-    caption: "Bugatti Chiron против Болида Формулы-1! 🏎️💨 Драг-рейсинг 1500 л.с.! Звук выхлопа 🔥 #supercar #bugatti #speed #cars",
-    hashtags: ["supercar", "bugatti", "speed", "cars"],
-    audioTitle: "🎵 Bugatti Chiron 1500 HP — V16 Engine Exhaust Sound 🏎️💨",
-    likes: ["traveler_osh", "photo_kg", "osh_admin"],
-    saves: ["reels_star"],
-    viewsCount: 14200,
-    commentsCount: 19,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_supercar_2",
-    userId: "reels_star",
-    type: "reel",
-    mediaURL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4",
-    coverURL: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&auto=format&fit=crop&q=80",
-    caption: "Ралли и Дрифт по бездорожью! 🚗💨 Разгон до 100 км/ч за 3 секунды! #rally #drift #subaru #cars",
-    hashtags: ["rally", "drift", "subaru", "cars"],
-    audioTitle: "🎵 Drift Phonk — Tokyo Drift Remix 🚗🔥",
-    likes: ["traveler_osh", "photo_kg"],
-    saves: [],
-    viewsCount: 9500,
-    commentsCount: 8,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_supercar_3",
-    userId: "reels_star",
-    type: "reel",
-    mediaURL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4",
-    coverURL: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&auto=format&fit=crop&q=80",
-    caption: "BMW M5 F90 — Ночной Дрифт по городу! 🌃🏎️ 800 лошадей под капотом! #bmw #m5 #drift #cars",
-    hashtags: ["bmw", "m5", "drift", "cars"],
-    audioTitle: "🎵 BMW M5 F90 — Night City Drive Synthwave 🌃🏎️",
-    likes: ["traveler_osh", "photo_kg", "osh_admin"],
-    saves: ["reels_star"],
-    viewsCount: 38200,
-    commentsCount: 54,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_sports_1",
-    userId: "reels_star",
-    type: "reel",
-    mediaURL: "youtube:E_g9KkIeZ_E",
-    coverURL: "https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&auto=format&fit=crop&q=80",
-    caption: "⚽ ФУТБОЛ 4K! Лионель Месси — Невероятные финты и дриблинг 4K! ⚽🐐 Гений мирового футбола! #футбол #фудбол #messi #football #sport #skills #гол",
-    hashtags: ["футбол", "фудбол", "messi", "football", "sport", "skills", "гол"],
-    audioTitle: "🎵 Lionel Messi — Magic Dribbling & Skills 4K ⚽🐐",
-    likes: ["traveler_osh", "photo_kg", "reels_star", "osh_admin"],
-    saves: ["reels_star"],
-    viewsCount: 42100,
-    commentsCount: 63,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_sports_2",
-    userId: "reels_star",
-    type: "reel",
-    mediaURL: "youtube:34Na4j8AVgA",
-    coverURL: "https://images.unsplash.com/photo-1518091043644-c1d4457512c6?w=800&auto=format&fit=crop&q=80",
-    caption: "⚽ ФУТБОЛ! Криштиану Роналду — Лучшие голы и фирменное SIUUU! ⚽🔥 #футбол #фудбол #ronaldo #cr7 #football #sport #гол",
-    hashtags: ["футбол", "фудбол", "ronaldo", "cr7", "football", "sport", "гол"],
-    audioTitle: "🎵 Cristiano Ronaldo — SIUUU Anthem Remix ⚽🔥",
-    likes: ["traveler_osh", "photo_kg", "osh_admin"],
-    saves: [],
-    viewsCount: 38900,
-    commentsCount: 51,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_sports_3",
-    userId: "reels_star",
-    type: "reel",
-    mediaURL: "youtube:8B6h3Y1W4Q0",
-    coverURL: "https://images.unsplash.com/photo-1579783900882-c0d3dad7b119?w=800&auto=format&fit=crop&q=80",
-    caption: "⚽ ФУТБОЛ Лига Чемпионов! Сумасшедший красивый гол с 30 метров через себя! 😱💥 #футбол #фудбол #championsleague #football #goal",
-    hashtags: ["футбол", "фудбол", "championsleague", "football", "goal"],
-    audioTitle: "🎵 UEFA Champions League — Official Hymn 🏆",
-    likes: ["traveler_osh", "photo_kg", "osh_admin", "reels_star"],
-    saves: ["reels_star"],
-    viewsCount: 54100,
-    commentsCount: 78,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 1 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_nature_1",
-    userId: "traveler_osh",
-    type: "reel",
-    mediaURL: "https://vjs.zencdn.net/v/oceans.mp4",
-    coverURL: "https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800&auto=format&fit=crop&q=80",
-    caption: "Невероятный подводный мир океана! 🐬🌊 Дельфины и скаты в синих глубинах 💙 #ocean #dolphins #nature #underwater",
-    hashtags: ["ocean", "dolphins", "nature", "underwater"],
-    audioTitle: "🎵 Ocean Waves & Dolphin Chillout Symphony 🐬🌊",
-    likes: ["photo_kg", "reels_star", "osh_admin"],
-    saves: ["traveler_osh"],
-    viewsCount: 24500,
-    commentsCount: 31,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_nature_2",
-    userId: "traveler_osh",
-    type: "reel",
-    mediaURL: "https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4",
-    coverURL: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&auto=format&fit=crop&q=80",
-    caption: "Утренний расцвет альпийских цветов 🌸🏔️ Горы Кыргызстана под лучами солнца! #nature #flowers #kyrgyzstan",
-    hashtags: ["nature", "flowers", "kyrgyzstan"],
-    audioTitle: "🎵 Kyrgyzstan Mountain Morning Acoustic Guitar 🌸🏔️",
-    likes: ["reels_star", "photo_kg"],
-    saves: [],
-    viewsCount: 8900,
-    commentsCount: 11,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_nature_3",
-    userId: "traveler_osh",
-    type: "reel",
-    mediaURL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoylikes.mp4",
-    coverURL: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&auto=format&fit=crop&q=80",
-    caption: "Красота Кыргызстана с квадрокоптера 4K 🏔️ Иссык-Куль, Памир и Сулайман-Тоо! #kyrgyzstan #nature #drone #mountains",
-    hashtags: ["kyrgyzstan", "nature", "drone", "mountains"],
-    audioTitle: "🎵 Pamir Aerial Drone Ambient Lofi 🚁✨",
-    likes: ["traveler_osh", "photo_kg", "reels_star", "osh_admin"],
-    saves: ["traveler_osh"],
-    viewsCount: 31000,
-    commentsCount: 45,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 7 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_cartoon_5",
-    userId: "cartoon_master",
-    type: "reel",
-    mediaURL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
-    coverURL: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&auto=format&fit=crop&q=80",
-    caption: "🐇 Мультфильм Big Buck Bunny: Приключения упитанного Кролика в сказочном лесу! 🌳✨ #cartoon #bunny #kids #funny",
-    hashtags: ["cartoon", "bunny", "kids", "funny"],
-    audioTitle: "🎵 Big Buck Bunny — Forest Cartoon Orchestra 🐇🌳",
-    likes: ["reels_star", "photo_kg"],
-    saves: ["osh_admin"],
-    viewsCount: 11400,
-    commentsCount: 15,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 7 * 60 * 60 * 1000).toISOString()
-  },
-  {
-    id: "reel_cartoon_6",
-    userId: "cartoon_master",
-    type: "reel",
-    mediaURL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4",
-    coverURL: "https://images.unsplash.com/photo-1557683316-973673baf926?w=800&auto=format&fit=crop&q=80",
-    caption: "🤖 Sci-Fi Анимация Tears of Steel: Битва гигантских роботов будущего! 🏙️⚡ #scifi #animation #robots #cinema",
-    hashtags: ["scifi", "animation", "robots", "cinema"],
-    audioTitle: "🎵 Sci-Fi Robots — Cyberpunk Electronic Theme 🤖⚡",
-    likes: ["traveler_osh", "reels_star"],
-    saves: [],
-    viewsCount: 15800,
-    commentsCount: 21,
-    repostedFrom: null,
-    repostedBy: null,
-    createdAt: new Date(Date.now() - 8 * 60 * 60 * 1000).toISOString()
+const generateMockReels = () => {
+  const users = ["reels_star", "traveler_osh", "photo_kg", "osh_admin"];
+  const localVideos = [
+    { url: "/videos/video1.mp4", caption: "Невероятное подводное путешествие! Красота морских глубин, кристально чистая вода и коралловые рифы. 🌊🐠", tags: ["travel", "nature", "ocean", "diving", "adventure"] },
+    { url: "/videos/video2.mp4", caption: "Дикая природа нашего края! Бурый медведь ловит рыбу в чистейшей горной реке Алайского хребта. Потрясающие кадры! 🐻🏔️", tags: ["nature", "wildlife", "kyrgyzstan", "mountains", "bear"] },
+    { url: "/videos/video3.mp4", caption: "Создание 3D-анимации. Наш новый проект забавного короткометражного мультфильма про кролика! 🐰🎨", tags: ["animation", "3d", "cartoon", "creative", "art"] },
+    { url: "/videos/video5.mp4", caption: "Весна в городе Ош! Невероятное макро-видео цветения весенних бутонов в центральном парке. 🌸🌱", tags: ["osh", "spring", "flowers", "nature", "macro"] }
+  ];
+
+  const mashaVideos = [
+    { url: "/videos/video3.mp4", caption: "👧🐻 Маша и Медведь - «День Варенья»! 🍓🍯 Забавные приключения Маши в волшебном лесу!", tags: ["машаимедведь", "мультики", "masha", "kids"] },
+    { url: "/videos/video5.mp4", caption: "👧🎈 Маша и Медведь - «Большая Стирка»! 🧼💦 Смотрите оригинальный мультик прямо тут!", tags: ["машаимедведь", "мультики", "masha", "funny"] },
+    { url: "/videos/video3.mp4", caption: "👧🎣 Маша и Медведь - «Ловись, рыбка!» 🐟 Полет Маши над горами и волшебные истории!", tags: ["машаимедведь", "мультики", "cartoons"] }
+  ];
+
+  const a4Videos = [
+    { url: "/videos/video1.mp4", caption: "1,000 ЗАДАНИЙ за 24 ЧАСА ЧЕЛЛЕНДЖ ! 😱 Большой выпуск! Смотри прямо тут 👇", tags: ["a4", "challenge", "24hours", "longvideo"] },
+    { url: "/videos/video2.mp4", caption: "Успей за 7 секунд челлендж! ⏱️⚡ Кто проиграет — выполняет наказание!", tags: ["a4", "challenge", "7seconds", "fun"] },
+    { url: "/videos/video5.mp4", caption: "КАЖДЫЙ КТО НАЙДЕТ ПОЛУЧИТ $1000! 💵 Влад А4 прячется на необитаемом острове!", tags: ["a4", "challenge", "hideandseek", "a4team"] }
+  ];
+
+  const reels = [];
+  
+  // 1. Generate 35 Masha Reels
+  for (let i = 1; i <= 35; i++) {
+    const video = mashaVideos[(i - 1) % mashaVideos.length];
+    reels.push({
+      id: `reel_masha_${i}`,
+      userId: "masha_medved",
+      type: "reel",
+      mediaURL: video.url,
+      coverURL: "https://images.unsplash.com/photo-1534447677768-be436bb09401?w=800&auto=format&fit=crop&q=80",
+      caption: `${video.caption} (Серия ${i}) 🍿✨`,
+      hashtags: video.tags,
+      likes: ["traveler_osh", "photo_kg", "osh_admin"],
+      saves: ["masha_medved"],
+      viewsCount: Math.floor(Math.random() * 20000) + 5000,
+      commentsCount: Math.floor(Math.random() * 40),
+      repostedFrom: null,
+      repostedBy: null,
+      createdAt: new Date(Date.now() - i * 4 * 3600 * 1000).toISOString()
+    });
   }
-];
+
+  // 2. Generate 35 Vlad A4 Reels
+  for (let i = 1; i <= 35; i++) {
+    const video = a4Videos[(i - 1) % a4Videos.length];
+    reels.push({
+      id: `reel_a4_${i}`,
+      userId: "vlad_a4",
+      type: "reel",
+      mediaURL: video.url,
+      coverURL: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&auto=format&fit=crop&q=80",
+      caption: `${video.caption} (Часть ${i}) ⚡🔥`,
+      hashtags: video.tags,
+      likes: ["reels_star", "photo_kg", "osh_admin"],
+      saves: ["vlad_a4"],
+      viewsCount: Math.floor(Math.random() * 15000) + 3000,
+      commentsCount: Math.floor(Math.random() * 25),
+      repostedFrom: null,
+      repostedBy: null,
+      createdAt: new Date(Date.now() - i * 5 * 3600 * 1000).toISOString()
+    });
+  }
+
+  // 3. Generate 30 General/Local Reels
+  for (let i = 1; i <= 30; i++) {
+    const video = localVideos[(i - 1) % localVideos.length];
+    const user = users[i % users.length];
+    reels.push({
+      id: `reel_${i}`,
+      userId: user,
+      type: "reel",
+      mediaURL: video.url,
+      coverURL: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=800&auto=format&fit=crop&q=80",
+      caption: `${video.caption} Выпуск #${i} 🏔️✨`,
+      hashtags: video.tags,
+      likes: ["traveler_osh", "photo_kg"],
+      saves: [],
+      viewsCount: Math.floor(Math.random() * 5000) + 100,
+      commentsCount: Math.floor(Math.random() * 5),
+      repostedFrom: null,
+      repostedBy: null,
+      createdAt: new Date(Date.now() - i * 6 * 3600 * 1000).toISOString()
+    });
+  }
+
+  return reels;
+};
+
+export const SEED_REELS = generateMockReels();
 
 export const SEED_STORIES = [
   {
@@ -779,16 +442,6 @@ export const SEED_COMMENTS = [
 
 export const SEED_CONVERSATIONS = [
   {
-    id: "conv_ai",
-    participants: ["osh_admin", "ai_assistant"],
-    lastMessage: "Привет! Я твой виртуальный ИИ-ассистент Instagram 🤖 Чем могу помочь?",
-    lastMessageAt: new Date().toISOString(),
-    unreadCount: {
-      osh_admin: 1,
-      ai_assistant: 0
-    }
-  },
-  {
     id: "conv_1",
     participants: ["traveler_osh", "reels_star"],
     lastMessage: "Ок, договорились, снимем коллаб завтра на Сулайман-Тоо!",
@@ -811,14 +464,6 @@ export const SEED_CONVERSATIONS = [
 ];
 
 export const SEED_MESSAGES = [
-  {
-    id: "msg_ai_1",
-    conversationId: "conv_ai",
-    senderId: "ai_assistant",
-    text: "Привет! Я твой виртуальный ИИ-ассистент Instagram 🤖 Задай мне любой вопрос, попроси придумать описание к фото, вирусные хештеги или музыку для Reels!",
-    sharedPostId: null,
-    createdAt: new Date().toISOString()
-  },
   {
     id: "msg_1",
     conversationId: "conv_1",
