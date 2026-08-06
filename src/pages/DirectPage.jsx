@@ -424,7 +424,7 @@ export default function DirectPage() {
               {showCallModal === 'video' && !isVideoMuted && (
                 <div className="w-full h-48 bg-slate-900 rounded-2xl overflow-hidden border border-white/10 relative">
                   <video 
-                    src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+                    src="/videos/video1.mp4"
                     autoPlay
                     loop
                     muted

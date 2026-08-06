@@ -139,7 +139,7 @@ export const SEED_POSTS = [
     id: "post_a4_1",
     userId: "vlad_a4",
     type: "video",
-    mediaURL: "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+    mediaURL: "/videos/video1.mp4",
     caption: "1,000 ЗАДАНИЙ за 24 ЧАСА ЧЕЛЛЕНДЖ ! 😱 Наш самый новый и безумный выпуск! Смотри прямо сейчас 👇 #a4 #challenge #omg #fun #vlad",
     hashtags: ["a4", "challenge", "omg", "fun", "vlad"],
     likes: ["traveler_osh", "reels_star", "photo_kg", "osh_admin"],

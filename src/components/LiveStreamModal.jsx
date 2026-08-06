@@ -80,7 +80,7 @@ export default function LiveStreamModal({ isOpen, onClose, currentUser }) {
         >
           {/* Background Live Stream Video Feed */}
           <video 
-            src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4"
+            src="/videos/video2.mp4"
             autoPlay
             loop
             muted={isMuted}
