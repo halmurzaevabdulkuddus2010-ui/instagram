@@ -636,91 +636,9 @@ export const dbService = {
       triggerMockUpdate(KEYS.CONVERSATIONS);
     }
 
-    // Trigger auto-reply bot if sending a regular message
-    if (recipientId && !sharedPostId) {
-      setTimeout(async () => {
-        const users = JSON.parse(localStorage.getItem(KEYS.USERS) || '[]');
-        const recipientUser = users.find(u => u.uid === recipientId);
-        
-        // Smart reply content mapping
-        let replyText = "";
-        const lowerText = text.toLowerCase();
-
-        if (lowerText.includes("привет") || lowerText.includes("салам") || lowerText.includes("здравствуй") || lowerText.includes("здравствуйте")) {
-          replyText = `Привет! 😊 Рад(а) твоему сообщению. Чем могу помочь?`;
-        } else if (lowerText.includes("аккаунт") || lowerText.includes("профил") || lowerText.includes("подписк") || lowerText.includes("закрыт")) {
-          replyText = `Да, теперь все аккаунты открыты и их можно смотреть без подписки! Посты и Reels загружаются моментально. Проверь сам! 👍`;
-        } else if (lowerText.includes("рилс") || lowerText.includes("рилсы") || lowerText.includes("видео") || lowerText.includes("видио")) {
-          replyText = `Все Reels (рилсы) загружаются локально с сервера, поэтому они работают супер быстро! Мы добавили 100 видеороликов, листай на здоровье! 🎥✨`;
-        } else if (lowerText.includes("как дела") || lowerText.includes("как ты")) {
-          replyText = `Все отлично! Готовлю новый классный контент для INSTAGRAM. Как твои дела? 😉`;
-        } else if (lowerText.includes("цена") || lowerText.includes("реклам") || lowerText.includes("сотрудничеств") || lowerText.includes("купить")) {
-          replyText = `По вопросам сотрудничества и рекламы пишите мне в Директ. Я отвечу, как только освобожусь! 📈💼`;
-        } else {
-          // Fallback replies depending on sender identity
-          if (recipientId === "ai_assistant") {
-            if (lowerText.includes("хештег") || lowerText.includes("hashtag")) {
-              replyText = `Вот вирусные хештеги для твоего поста: #osh #kyrgyzstan #reels #viral #aesthetic #style 🚀✨`;
-            } else if (lowerText.includes("музык") || lowerText.includes("трек") || lowerText.includes("песн")) {
-              replyText = `Рекомендую добавить трек для Reels: 🎵 Phonk Drift Remix или 🎵 Classic Lofi Beats! Обязательно вставь их в ролик! 🎧🔥`;
-            } else if (lowerText.includes("идея") || lowerText.includes("пост") || lowerText.includes("reels")) {
-              replyText = `Идея для Reels: Сними видео 5 секунд с подписью-загадкой и трендовым битом! Виральность гарантирована 🎬💥`;
-            } else {
-              replyText = `Привет! Я твой виртуальный ИИ-ассистент Instagram 🤖 Задай мне вопрос, попроси придумать описание к фото, трек или идею для Reels! ✨`;
-            }
-          } else if (recipientId === "osh_admin") {
-            replyText = `Здравствуйте! Я Администратор INSTAGRAM. Ваше обращение принято, я отвечу вам в ближайшее время. Спасибо за обращение! 🛡️✉️`;
-          } else if (recipientId === "traveler_osh") {
-            replyText = `Салам! Я сейчас в горах на съемках новой природы 🏔️. Вернусь в сеть — обязательно отвечу подробнее! 😉`;
-          } else if (recipientId === "photo_kg") {
-            replyText = `Привет! Сейчас обрабатываю новую фотосессию 📸. Скоро скину новые посты в ленту. Спасибо за сообщение!`;
-          } else if (recipientId === "reels_star") {
-            replyText = `Приветик! Монтирую новое крутое видео для Reels 🎬✨. Скоро выложу! Спасибо за поддержку!`;
-          } else {
-            replyText = `Спасибо за сообщение! Я прочитал и скоро отвечу тебе. Рад(а) общению! 😊`;
-          }
-        }
-
-        // Send response without triggering recursive callback loop
-        await dbService.sendBotReply(conversationId, recipientId, replyText);
-      }, 1500);
-    }
   },
 
-  sendBotReply: async (conversationId, senderId, text) => {
-    const messages = JSON.parse(localStorage.getItem(KEYS.MESSAGES) || '[]');
-    const newMessage = {
-      id: `msg_${Date.now()}`,
-      conversationId,
-      senderId,
-      text,
-      sharedPostId: null,
-      createdAt: new Date().toISOString()
-    };
-    messages.push(newMessage);
-    localStorage.setItem(KEYS.MESSAGES, JSON.stringify(messages));
-    triggerMockUpdate(KEYS.MESSAGES);
 
-    const conversations = JSON.parse(localStorage.getItem(KEYS.CONVERSATIONS) || '[]');
-    const convIndex = conversations.findIndex(c => c.id === conversationId);
-    if (convIndex !== -1) {
-      const conv = conversations[convIndex];
-      conv.lastMessage = text;
-      conv.lastMessageAt = newMessage.createdAt;
-      
-      // Update unread count for the recipient user
-      const otherParticipant = conv.participants.find(p => p !== senderId);
-      if (otherParticipant) {
-        if (!conv.unreadCount) conv.unreadCount = {};
-        conv.unreadCount[otherParticipant] = (conv.unreadCount[otherParticipant] || 0) + 1;
-      }
-
-      conversations.splice(convIndex, 1);
-      conversations.unshift(conv);
-      localStorage.setItem(KEYS.CONVERSATIONS, JSON.stringify(conversations));
-      triggerMockUpdate(KEYS.CONVERSATIONS);
-    }
-  },
 
   clearUnreadCount: async (conversationId, userId) => {
     const conversations = JSON.parse(localStorage.getItem(KEYS.CONVERSATIONS) || '[]');
