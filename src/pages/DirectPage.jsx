@@ -24,6 +24,24 @@ import {
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
+const formatMessageTime = (dateString) => {
+  if (!dateString) return '';
+  const date = new Date(dateString);
+  const now = new Date();
+  
+  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const yesterday = new Date(today.getTime() - 24 * 60 * 60 * 1000);
+  const msgDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  
+  if (msgDate.getTime() === today.getTime()) {
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  } else if (msgDate.getTime() === yesterday.getTime()) {
+    return "Вчера";
+  } else {
+    return date.toLocaleDateString([], { day: 'numeric', month: 'short' });
+  }
+};
+
 export default function DirectPage() {
   const { currentUser } = useAuth();
   const [conversations, setConversations] = useState([]);
@@ -213,7 +231,7 @@ export default function DirectPage() {
                     <div className="flex justify-between items-baseline mb-0.5">
                       <h4 className="text-xs font-bold truncate leading-tight">{recipient.displayName}</h4>
                       <span className="text-[9px] text-theme-lightMuted dark:text-theme-darkMuted shrink-0">
-                        {new Date(conv.lastMessageAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {formatMessageTime(conv.lastMessageAt)}
                       </span>
                     </div>
                     <p className={`text-[11px] truncate ${
@@ -284,9 +302,16 @@ export default function DirectPage() {
 
             {/* Scrollable Message Box */}
             <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-3">
-              {messages.map((msg) => {
+              {messages.map((msg, idx) => {
                 const isSelf = msg.senderId === currentUser.uid;
                 
+                const prevMsg = idx > 0 ? messages[idx - 1] : null;
+                const showDateHeader = !prevMsg || (() => {
+                  const prevDate = new Date(prevMsg.createdAt).toDateString();
+                  const currDate = new Date(msg.createdAt).toDateString();
+                  return prevDate !== currDate;
+                })();
+
                 const sharedPost = msg.sharedPostId ? posts.find(p => p.id === msg.sharedPostId) : null;
                 const sharedPostAuthor = sharedPost ? users.find(u => u.uid === sharedPost.userId) : null;
 
@@ -294,70 +319,84 @@ export default function DirectPage() {
                 const sharedReelAuthor = sharedReel ? users.find(u => u.uid === sharedReel.userId) : null;
 
                 return (
-                  <div 
-                    key={msg.id}
-                    className={`flex flex-col ${isSelf ? 'items-end' : 'items-start'}`}
-                  >
+                  <React.Fragment key={msg.id}>
+                    {showDateHeader && (
+                      <div className="w-full text-center my-3 shrink-0">
+                        <span className="text-[10px] bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 px-3 py-1.5 rounded-full font-bold">
+                          {(() => {
+                            const date = new Date(msg.createdAt);
+                            const today = new Date().toDateString();
+                            const yesterday = new Date(Date.now() - 24 * 60 * 60 * 1000).toDateString();
+                            if (date.toDateString() === today) return "Сегодня";
+                            if (date.toDateString() === yesterday) return "Вчера";
+                            return date.toLocaleDateString([], { day: 'numeric', month: 'long' });
+                          })()}
+                        </span>
+                      </div>
+                    )}
                     <div 
-                      className={`max-w-[75%] p-3.5 rounded-2xl text-xs shadow-sm ${
-                        isSelf 
-                          ? 'bg-gradient-to-r from-purple-600 to-brand text-white rounded-br-none' 
-                          : 'bg-theme-lightCard dark:bg-theme-darkCard text-theme-lightText dark:text-theme-darkText border border-theme-lightBorder dark:border-theme-darkBorder rounded-bl-none'
-                      }`}
+                      className={`flex flex-col ${isSelf ? 'items-end' : 'items-start'}`}
                     >
-                      {/* Text */}
-                      {msg.text && <p className="leading-relaxed whitespace-pre-line">{msg.text}</p>}
+                      <div 
+                        className={`max-w-[75%] p-3.5 rounded-2xl text-xs shadow-sm ${
+                          isSelf 
+                            ? 'bg-gradient-to-r from-purple-600 to-brand text-white rounded-br-none' 
+                            : 'bg-theme-lightCard dark:bg-theme-darkCard text-theme-lightText dark:text-theme-darkText border border-theme-lightBorder dark:border-theme-darkBorder rounded-bl-none'
+                        }`}
+                      >
+                        {/* Text */}
+                        {msg.text && <p className="leading-relaxed whitespace-pre-line">{msg.text}</p>}
 
-                      {/* Shared Post Card */}
-                      {sharedPost && (
-                        <div className="mt-2 rounded-xl overflow-hidden border border-white/20 bg-black/20 p-2 flex flex-col gap-1.5">
-                          <div className="flex items-center gap-2">
-                            <img 
-                              src={sharedPostAuthor?.photoURL} 
-                              alt="author" 
-                              className="w-5 h-5 rounded-full object-cover" 
-                            />
-                            <span className="text-[10px] font-extrabold text-white">
-                              @{sharedPostAuthor?.username || 'user'}
-                            </span>
+                        {/* Shared Post Card */}
+                        {sharedPost && (
+                          <div className="mt-2 rounded-xl overflow-hidden border border-white/20 bg-black/20 p-2 flex flex-col gap-1.5">
+                            <div className="flex items-center gap-2">
+                              <img 
+                                src={sharedPostAuthor?.photoURL} 
+                                alt="author" 
+                                className="w-5 h-5 rounded-full object-cover" 
+                              />
+                              <span className="text-[10px] font-extrabold text-white">
+                                @{sharedPostAuthor?.username || 'user'}
+                              </span>
+                            </div>
+                            {sharedPost.type === 'photo' ? (
+                              <img 
+                                src={sharedPost.mediaURL} 
+                                alt="Shared" 
+                                className="w-full max-h-48 object-cover rounded-lg" 
+                              />
+                            ) : (
+                              <video 
+                                src={sharedPost.mediaURL} 
+                                controls 
+                                className="w-full max-h-48 object-cover rounded-lg" 
+                              />
+                            )}
+                            <p className="text-[10px] text-white/90 line-clamp-1 italic">{sharedPost.caption}</p>
                           </div>
-                          {sharedPost.type === 'photo' ? (
-                            <img 
-                              src={sharedPost.mediaURL} 
-                              alt="Shared" 
-                              className="w-full max-h-48 object-cover rounded-lg" 
-                            />
-                          ) : (
+                        )}
+
+                        {/* Shared Reel Card */}
+                        {sharedReel && (
+                          <div className="mt-2 rounded-xl overflow-hidden border border-purple-400/30 bg-black/40 p-2 flex flex-col gap-1.5">
+                            <div className="flex items-center gap-2">
+                              <span className="text-[10px] font-extrabold text-pink-300">Reels 🎬</span>
+                            </div>
                             <video 
-                              src={sharedPost.mediaURL} 
+                              src={sharedReel.mediaURL} 
                               controls 
                               className="w-full max-h-48 object-cover rounded-lg" 
                             />
-                          )}
-                          <p className="text-[10px] text-white/90 line-clamp-1 italic">{sharedPost.caption}</p>
-                        </div>
-                      )}
-
-                      {/* Shared Reel Card */}
-                      {sharedReel && (
-                        <div className="mt-2 rounded-xl overflow-hidden border border-purple-400/30 bg-black/40 p-2 flex flex-col gap-1.5">
-                          <div className="flex items-center gap-2">
-                            <Clapperboard size={14} className="text-pink-400" />
-                            <span className="text-[10px] font-extrabold text-pink-300">Reels</span>
+                            <p className="text-[10px] text-white/90 line-clamp-1 italic">{sharedReel.caption}</p>
                           </div>
-                          <video 
-                            src={sharedReel.mediaURL} 
-                            controls 
-                            className="w-full max-h-48 object-cover rounded-lg" 
-                          />
-                          <p className="text-[10px] text-white/90 line-clamp-1 italic">{sharedReel.caption}</p>
-                        </div>
-                      )}
+                        )}
+                      </div>
+                      <span className="text-[9px] text-slate-400 mt-1 px-1">
+                        {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </span>
                     </div>
-                    <span className="text-[9px] text-slate-400 mt-1 px-1">
-                      {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                    </span>
-                  </div>
+                  </React.Fragment>
                 );
               })}
               <div ref={chatBottomRef} />
