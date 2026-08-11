@@ -445,7 +445,7 @@ export const SEED_CONVERSATIONS = [
     id: "conv_1",
     participants: ["traveler_osh", "reels_star"],
     lastMessage: "Ок, договорились, снимем коллаб завтра на Сулайман-Тоо!",
-    lastMessageAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
+    lastMessageAt: new Date(Date.now() - 3 * 60 * 1000).toISOString(),
     unreadCount: {
       traveler_osh: 0,
       reels_star: 0
@@ -455,7 +455,7 @@ export const SEED_CONVERSATIONS = [
     id: "conv_2",
     participants: ["osh_admin", "traveler_osh"],
     lastMessage: "Привет! Твой пост о плове попал в рекомендации. Отличная работа!",
-    lastMessageAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString(),
+    lastMessageAt: new Date(Date.now() - 10 * 60 * 1000).toISOString(),
     unreadCount: {
       osh_admin: 0,
       traveler_osh: 1
@@ -470,7 +470,7 @@ export const SEED_MESSAGES = [
     senderId: "traveler_osh",
     text: "Привет, Адинай! Видела мои новые фото с горы?",
     sharedPostId: null,
-    createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString()
+    createdAt: new Date(Date.now() - 15 * 60 * 1000).toISOString()
   },
   {
     id: "msg_2",
@@ -478,7 +478,7 @@ export const SEED_MESSAGES = [
     senderId: "reels_star",
     text: "Привет! Да, заценила! Очень крутые цвета. Давай сделаем Reels вместе?",
     sharedPostId: null,
-    createdAt: new Date(Date.now() - 3.5 * 60 * 60 * 1000).toISOString()
+    createdAt: new Date(Date.now() - 12 * 60 * 1000).toISOString()
   },
   {
     id: "msg_3",
@@ -486,7 +486,7 @@ export const SEED_MESSAGES = [
     senderId: "traveler_osh",
     text: "Крутая идея! Какая тема?",
     sharedPostId: null,
-    createdAt: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString()
+    createdAt: new Date(Date.now() - 8 * 60 * 1000).toISOString()
   },
   {
     id: "msg_4",
@@ -494,7 +494,7 @@ export const SEED_MESSAGES = [
     senderId: "reels_star",
     text: "Ок, договорились, снимем коллаб завтра на Сулайман-Тоо!",
     sharedPostId: null,
-    createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()
+    createdAt: new Date(Date.now() - 3 * 60 * 1000).toISOString()
   },
   {
     id: "msg_5",
@@ -502,7 +502,7 @@ export const SEED_MESSAGES = [
     senderId: "osh_admin",
     text: "Привет! Твой пост о плове попал в рекомендации. Отличная работа!",
     sharedPostId: "post_3", // Share post_3 in chat
-    createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
+    createdAt: new Date(Date.now() - 10 * 60 * 1000).toISOString()
   }
 ];
 
